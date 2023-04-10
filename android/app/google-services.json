@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "269349308702",
+    "project_id": "drivedoctor-ea7d6",
+    "storage_bucket": "drivedoctor-ea7d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269349308702:android:b09f1e9feb054eb4cda10f",
+        "android_client_info": {
+          "package_name": "com.example.drivedoctor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "269349308702-tijo1fehk3g4vlqhl205t9h2k0qd1lev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDATF3xN5gOaZrJu5E0DAu5haWN54cnpE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "269349308702-tijo1fehk3g4vlqhl205t9h2k0qd1lev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
