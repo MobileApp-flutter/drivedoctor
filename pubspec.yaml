@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_core: ^1.6.0
-  flutter_statusbarcolor: ^0.2.3
+  
   
 
 

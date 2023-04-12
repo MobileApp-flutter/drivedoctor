@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -149,6 +148,7 @@ class _LoginScreenState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
         child: GestureDetector(
           child: Stack(
             children: <Widget>[
