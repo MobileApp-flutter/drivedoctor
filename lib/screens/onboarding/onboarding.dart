@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({
@@ -65,19 +66,33 @@ class _OnboardingState extends State<Onboarding> {
                   height: 60,
                   width: 60,
                   child: ElevatedButton(
-                      onPressed: () {
-                        _onboardController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                      ),
-                      child: SvgPicture.asset(
-                        'link svg',
-                        colorFilter: const ColorFilter.mode(
-                            Colors.white, BlendMode.srcIn),
-                      ))),
+  onPressed: () {
+    if (_pageIndex == onboarddata.length - 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DashboardPage(),
+        ),
+      );
+    } else {
+      _onboardController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    shape: const CircleBorder(),
+  ),
+  child: SvgPicture.asset(
+    'link svg',
+    colorFilter: const ColorFilter.mode(
+      Colors.white,
+      BlendMode.srcIn,
+    ),
+  ),
+),
+),
             ],
           )
         ],
