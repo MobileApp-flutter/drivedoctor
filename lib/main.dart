@@ -1,4 +1,6 @@
+import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 import 'package:drivedoctor/screens/onboarding/onboarding.dart';
+import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:drivedoctor/screens/login/login.dart';
 
@@ -26,6 +28,6 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: LoginPage());
+        home: const DashboardPage());
   }
 }

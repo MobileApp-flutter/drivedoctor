@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'bottom_navigation_bar.dart';
+import '../../constants/bottom_navigation_bar.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -11,8 +11,9 @@ class DashboardPage extends StatelessWidget {
         title: Text('DriveDoctor'),
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
-      currentIndex: 0, // Replace with your current index variable// Replace with your onTabTapped callback function
-),
+        currentIndex:
+            0, // Replace with your current index variable// Replace with your onTabTapped callback function
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

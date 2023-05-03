@@ -1,5 +1,6 @@
 import 'package:drivedoctor/constants/onboarddata.dart';
 import 'package:drivedoctor/constants/textstyle.dart';
+import 'package:drivedoctor/screens/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
@@ -104,7 +105,12 @@ class _OnboardingState extends State<Onboarding> {
                           width: 120,
                           child: ElevatedButton(
                             onPressed: () {
-                              // TODO: Implement sign in logic
+                              //to login page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               shape: const RoundedRectangleBorder(

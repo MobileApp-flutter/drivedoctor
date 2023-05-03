@@ -3,6 +3,7 @@ import 'package:drivedoctor/screens/profile/update_profile.dart';
 import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import '../../constants/bottom_navigation_bar.dart';
 
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
@@ -38,6 +39,10 @@ class Profile extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        bottomNavigationBar: const BottomNavigationBarWidget(
+          currentIndex:
+              0, // Replace with your current index variable// Replace with your onTabTapped callback function
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),

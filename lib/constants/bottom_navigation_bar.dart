@@ -1,3 +1,4 @@
+import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 
@@ -57,6 +58,10 @@ class BottomNavigationBarWidget extends StatelessWidget {
       case 3:
         break;
       case 4:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Profile()),
+        );
         break;
       default:
         break;
