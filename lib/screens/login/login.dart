@@ -1,199 +1,139 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:drivedoctor/screens/home/exampleHome.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _LoginScreenState(),
-    );
+  void initState() {
+    super.initState();
+    // Check if user is already signed in
+    final currentUser = _auth.currentUser;
+    if (currentUser != null) {
+      // Navigate to home page
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
   }
-}
 
-Widget buildEmail() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      Text(
-        'Email',
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: 'Roboto',
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          decoration: TextDecoration.none,
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'An error occurred'),
         ),
-      ),
-      SizedBox(height: 10),
-      Container(
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        height: 60,
-        child: TextField(
-          keyboardType: TextInputType.emailAddress,
-          style: TextStyle(
-            color: Colors.black87,
-            fontFamily: 'Roboto',
-          ),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.only(top: 14),
-            prefixIcon: Icon(
-              Icons.email,
-              color: Colors.black87,
-            ),
-            hintText: 'Enter your Email',
-            hintStyle: TextStyle(
-              color: Colors.black38,
-              fontFamily: 'Roboto',
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
+      );
+    }
+  }
 
-Widget buildPassword() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      Text(
-        'Password',
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: 'Roboto',
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          decoration: TextDecoration.none,
-        ),
-      ),
-      SizedBox(height: 10),
-      Container(
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              )
-            ]),
-        height: 60,
-        child: TextField(
-          obscureText: true,
-          style: TextStyle(
-            color: Colors.black87,
-            fontFamily: 'Roboto',
-          ),
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14),
-              prefixIcon: Icon(
-                Icons.lock,
-                color: Colors.black87,
-              ),
-              hintText: 'Enter your Password',
-              hintStyle: TextStyle(
-                color: Colors.black38,
-                fontFamily: 'Roboto',
-              )),
-        ),
-      )
-    ],
-  );
-}
-
-Widget buildForgotPass() {
-  return Container(
-    alignment: Alignment.centerRight,
-    child: TextButton(
-      onPressed: () => print("Forgot Password Clicked"),
-      style: ButtonStyle(
-        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-            EdgeInsets.only(right: 0)),
-      ),
-      child: Text(
-        'Forgot Password?',
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: 'Roboto',
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-  );
-}
-
-class _LoginScreenState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                child: Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                        Color(0xFF73AEF5),
-                        Color(0xFF61A4F1),
-                        Color(0xFF478DE0),
-                        Color(0xFF398AE5),
-                      ])),
-                  child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 25, vertical: 120),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontFamily: 'Roboto',
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                          SizedBox(height: 50),
-                          buildEmail(),
-                          SizedBox(height: 20),
-                          buildPassword(),
-                          buildForgotPass(),
-                        ],
-                      )),
+      body: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: Colors.white,
+        ),
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.all(16.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'DriveDoctor',
+                  style: TextStyle(
+                    fontSize: 60,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 32.0),
+                Image.asset(
+                  'assets/garage.png',
+                  height: 100.0,
+                  width: 100.0,
+                ),
+                const SizedBox(height: 32.0),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 32.0),
+                ElevatedButton(
+                  onPressed: _login,
+                  child: const Text('Login'),
+                ),
+                const SizedBox(height: 16.0),
+                const Text(
+                  "Don't have an account? Register now!",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
