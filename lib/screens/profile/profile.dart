@@ -1,7 +1,11 @@
 import 'package:drivedoctor/constants/textstyle.dart';
+import 'package:drivedoctor/repository/auth.dart';
+import 'package:drivedoctor/routes/route.dart';
+import 'package:drivedoctor/screens/login/login.dart';
 import 'package:drivedoctor/screens/profile/update_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../constants/bottom_navigation_bar.dart';
 
@@ -20,29 +24,26 @@ class Profile extends StatelessWidget {
       ),
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(LineAwesomeIcons.angle_left),
-          ),
-          title: Center(
-            child: Text(
-              'Profile',
-              style: defaultText.copyWith(color: Colors.white),
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                isDark ? LineAwesomeIcons.sun : LineAwesomeIcons.moon,
-                color: iconColor,
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.blue.shade800,
+          elevation: 0,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                'Profile',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: const BottomNavigationBarWidget(
           currentIndex:
-              0, // Replace with your current index variable// Replace with your onTabTapped callback function
+              4, // Replace with your current index variable// Replace with your onTabTapped callback function
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -59,29 +60,60 @@ class Profile extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'John Wick',
+                Auth.email,
                 style: defaultText.copyWith(color: Colors.black),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                width: 120,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UpdateProfile()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade800,
-                    shape: const StadiumBorder(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UpdateProfile(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade800,
+                        shape: const StadiumBorder(),
+                      ),
+                      child: const Text(
+                        'Edit Profile',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
-                  child: const Text(
-                    'Edit Profile',
-                    style: TextStyle(color: Colors.white),
+                  const SizedBox(width: 10),
+                  Visibility(
+                    visible: FirebaseAuth.instance.currentUser == null,
+                    child: SizedBox(
+                      width: 120,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade800,
+                          shape: const StadiumBorder(),
+                        ),
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 15),
               Divider(
@@ -121,13 +153,29 @@ class Profile extends StatelessWidget {
                 icon: LineAwesomeIcons.alternate_sign_out,
                 textColor: Colors.red,
                 endIcon: false,
-                onPress: () {},
+                onPress: () async {
+                  await SignOut.signOut(context);
+                },
               ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class SignOut {
+  static Future<void> signOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, login);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error signing out: $e');
+      }
+    }
   }
 }
 

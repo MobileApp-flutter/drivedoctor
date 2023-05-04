@@ -1,11 +1,14 @@
+import 'package:drivedoctor/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:drivedoctor/screens/home/exampleHome.dart';
+
+import '../dashboard/dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -23,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     if (currentUser != null) {
       // Navigate to home page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => DashboardPage()),
       );
     }
   }
@@ -41,8 +44,9 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _isLoading = false;
       });
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => DashboardPage()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -71,25 +75,17 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'DriveDoctor',
-                  style: TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 32.0),
                 Image.asset(
-                  'assets/garage.png',
-                  height: 100.0,
-                  width: 100.0,
+                  'assets/logo.png',
+                  // height: 100.0,
+                  // width: 100.0,
                 ),
-                const SizedBox(height: 32.0),
+                // const SizedBox(height: 25.0),
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -106,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -125,11 +121,29 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text('Login'),
                 ),
                 const SizedBox(height: 16.0),
-                const Text(
-                  "Don't have an account? Register now!",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.grey,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: const Text(
+                    "Don't have an account? Register now!",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, dashboard);
+                  },
+                  child: const Text(
+                    "Skip to dashboard",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ],

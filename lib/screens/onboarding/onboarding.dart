@@ -1,13 +1,13 @@
 import 'package:drivedoctor/constants/onboarddata.dart';
 import 'package:drivedoctor/constants/textstyle.dart';
-import 'package:drivedoctor/screens/login/login.dart';
+import 'package:drivedoctor/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({
     Key? key,
+    required Null Function() onComplete,
   }) : super(key: key);
 
   @override
@@ -106,11 +106,8 @@ class _OnboardingState extends State<Onboarding> {
                           child: ElevatedButton(
                             onPressed: () {
                               //to login page
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                              );
+                              Navigator.pushReplacementNamed(
+                                  context, dashboard);
                             },
                             style: ElevatedButton.styleFrom(
                               shape: const RoundedRectangleBorder(
@@ -123,7 +120,7 @@ class _OnboardingState extends State<Onboarding> {
                               shadowColor: Colors.blue.shade800,
                             ),
                             child: const Text(
-                              'Sign In',
+                              'Next',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,

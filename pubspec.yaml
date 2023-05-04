@@ -36,6 +36,9 @@ dependencies:
   line_awesome_flutter: ^2.0.0
   flutter_svg: ^2.0.5
 
+  #splashscreen
+  shared_preferences: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
