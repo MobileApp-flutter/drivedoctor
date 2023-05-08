@@ -1,13 +1,13 @@
-import 'package:drivedoctor/constants/textstyle.dart';
-import 'package:drivedoctor/repository/auth.dart';
-import 'package:drivedoctor/routes/route.dart';
+import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/models/user.dart';
+import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/screens/login/login.dart';
 import 'package:drivedoctor/screens/profile/update_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import '../../constants/bottom_navigation_bar.dart';
+import '../../widgets/bottom_navigation_bar.dart';
 
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
@@ -59,32 +59,51 @@ class Profile extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                Auth.email,
-                style: defaultText.copyWith(color: Colors.black),
+              FutureBuilder<UserData>(
+                future: Auth.getUserDataByEmail(
+                    Auth.email), // pass email as argument
+                builder: (context, snapshot) {
+                  final username = snapshot.data?.username;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError || !snapshot.hasData) {
+                    // check if snapshot has data
+                    return const Text('Guest');
+                  } else {
+                    return Text(
+                      '$username',
+                      style: const TextStyle(
+                        color: Colors.black,
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 120,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const UpdateProfile(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade800,
-                        shape: const StadiumBorder(),
-                      ),
-                      child: const Text(
-                        'Edit Profile',
-                        style: TextStyle(color: Colors.white),
+                  Visibility(
+                    visible: FirebaseAuth.instance.currentUser != null,
+                    child: SizedBox(
+                      width: 120,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const UpdateProfile(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade800,
+                          shape: const StadiumBorder(),
+                        ),
+                        child: const Text(
+                          'Edit Profile',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
@@ -120,43 +139,66 @@ class Profile extends StatelessWidget {
                 color: Colors.blue.shade800,
               ),
               const SizedBox(height: 10),
-              ProfileWidget(
-                title: 'Settings',
-                icon: LineAwesomeIcons.cog,
-                onPress: () {},
-                textColor: textColor,
-              ),
-              ProfileWidget(
-                title: 'Billing Details',
-                icon: LineAwesomeIcons.wallet,
-                onPress: () {},
-                textColor: textColor,
-              ),
-              ProfileWidget(
-                title: 'User Management',
-                icon: LineAwesomeIcons.user_check,
-                onPress: () {},
-                textColor: textColor,
-              ),
-              Divider(
-                color: Colors.blue.shade800,
-              ),
-              const SizedBox(height: 10),
-              ProfileWidget(
-                title: 'Information',
-                icon: LineAwesomeIcons.info,
-                onPress: () {},
-                textColor: textColor,
-              ),
-              ProfileWidget(
-                title: 'Logout',
-                icon: LineAwesomeIcons.alternate_sign_out,
-                textColor: Colors.red,
-                endIcon: false,
-                onPress: () async {
-                  await SignOut.signOut(context);
-                },
-              ),
+
+              // Display the profile widgets only if the user is logged in
+              Auth.currentUser != null
+                  ? Column(
+                      children: [
+                        ProfileWidget(
+                          title: 'Settings',
+                          icon: LineAwesomeIcons.cog,
+                          onPress: () {},
+                          textColor: textColor,
+                        ),
+                        ProfileWidget(
+                          title: 'Billing Details',
+                          icon: LineAwesomeIcons.wallet,
+                          onPress: () {},
+                          textColor: textColor,
+                        ),
+                        ProfileWidget(
+                          title: 'Register your shop',
+                          icon: LineAwesomeIcons.user_friends,
+                          onPress: () {
+                            Navigator.pushReplacementNamed(
+                                context, shopRegister);
+                          },
+                          textColor: textColor,
+                        ),
+
+                        //shop dashboard (for user who already registered shops)
+                        ProfileWidget(
+                          title: 'Shop Dashboard',
+                          icon: LineAwesomeIcons.store,
+                          onPress: () {
+                            Navigator.pushReplacementNamed(
+                                context, shopDashboard);
+                          },
+                          textColor: textColor,
+                        ),
+
+                        Divider(
+                          color: Colors.blue.shade800,
+                        ),
+                        const SizedBox(height: 10),
+                        ProfileWidget(
+                          title: 'Information',
+                          icon: LineAwesomeIcons.info,
+                          onPress: () {},
+                          textColor: textColor,
+                        ),
+                        ProfileWidget(
+                          title: 'Logout',
+                          icon: LineAwesomeIcons.alternate_sign_out,
+                          textColor: Colors.red,
+                          endIcon: false,
+                          onPress: () async {
+                            await SignOut.signOut(context);
+                          },
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink()
             ],
           ),
         ),

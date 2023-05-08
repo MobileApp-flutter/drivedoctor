@@ -1,9 +1,10 @@
-import 'package:drivedoctor/repository/auth.dart';
+import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:flutter/material.dart';
-import '../../constants/bottom_navigation_bar.dart';
+import '../../widgets/bottom_navigation_bar.dart';
 
 class DashboardPage extends StatelessWidget {
-  DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +29,28 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              'Welcome, ${Auth.email}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            FutureBuilder<UserData>(
+              future:
+                  Auth.getUserDataByEmail(Auth.email), // pass email as argument
+              builder: (context, snapshot) {
+                final username = snapshot.data?.username;
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  // check if snapshot has data
+                  return const Text('Welcome, Guest');
+                } else {
+                  return Text(
+                    'Welcome, $username',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+              },
+            )
           ],
         ),
       ),

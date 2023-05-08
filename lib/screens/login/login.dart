@@ -1,4 +1,4 @@
-import 'package:drivedoctor/routes/route.dart';
+import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 16.0),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/register');
+                    Navigator.pushNamed(context, userRegister);
                   },
                   child: const Text(
                     "Don't have an account? Register now!",

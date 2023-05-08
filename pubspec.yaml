@@ -39,6 +39,9 @@ dependencies:
   #splashscreen
   shared_preferences: ^2.1.0
 
+  #cloud_firestore
+  cloud_firestore: ^4.4.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

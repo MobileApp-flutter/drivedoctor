@@ -1,15 +1,66 @@
+import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/controller/textform.dart';
+import 'package:drivedoctor/bloc/services/userservice.dart';
 import 'package:drivedoctor/constants/textstyle.dart';
-import 'package:drivedoctor/screens/profile/profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
-class UpdateProfile extends StatelessWidget {
+class UpdateProfile extends StatefulWidget {
   const UpdateProfile({Key? key}) : super(key: key);
+
+  @override
+  State<UpdateProfile> createState() => _UpdateProfileState();
+}
+
+class _UpdateProfileState extends State<UpdateProfile> {
+  String? id;
+  String? _username;
+  String? _fullname;
+  String? _password;
+  int? _contact;
+  String? email;
+
+  final _formKey = GlobalKey<FormState>();
+  final TextFormController textform = TextFormController();
+
+  void _updateForm() async {
+    final form = _formKey.currentState;
+    if (form!.validate()) {
+      form.save();
+
+      try {
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          await updateUser(
+            id: currentUser.uid,
+            username: _username,
+            fullname: _fullname,
+            contact: _contact,
+            password: _password,
+            email: Auth.email,
+          );
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Profile Updated!')));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error: User not logged in')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.blue.shade800,
           leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -54,53 +105,72 @@ class UpdateProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 50),
                   Form(
+                      key: _formKey,
                       child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Username",
-                          hintText: "Enter your username",
-                          prefixIcon: Icon(LineAwesomeIcons.user),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Password",
-                          hintText: "Enter your password",
-                          prefixIcon: Icon(LineAwesomeIcons.lock),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Email",
-                          hintText: "Enter your email",
-                          prefixIcon: Icon(LineAwesomeIcons.envelope),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                          width: 150,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Profile()),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade800,
-                                  side: BorderSide.none,
-                                  shape: const StadiumBorder()),
-                              child: const Text('Update changes',
-                                  style: defaultText)))
-                    ],
-                  ))
+                        children: [
+                          TextFormField(
+                            controller: textform.usernameController,
+                            decoration: const InputDecoration(
+                              labelText: "Username",
+                              hintText: "Enter your username",
+                              prefixIcon: Icon(LineAwesomeIcons.user),
+                              border: OutlineInputBorder(),
+                            ),
+                            onSaved: (value) {
+                              _username = value;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Fullname",
+                              hintText: "Enter your fullname",
+                              prefixIcon: Icon(LineAwesomeIcons.user_check),
+                              border: OutlineInputBorder(),
+                            ),
+                            onSaved: (value) {
+                              _fullname = value;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Password",
+                              hintText: "Enter your password",
+                              prefixIcon: Icon(LineAwesomeIcons.lock),
+                              border: OutlineInputBorder(),
+                            ),
+                            onSaved: (value) {
+                              _password = value;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Contact",
+                              hintText: "Enter your contact",
+                              prefixIcon: Icon(LineAwesomeIcons.phone),
+                              border: OutlineInputBorder(),
+                            ),
+                            onSaved: (value) {
+                              if (value != null && value.isNotEmpty) {
+                                _contact = int.parse(value);
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                              width: 150,
+                              child: ElevatedButton(
+                                  onPressed: _updateForm,
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade800,
+                                      side: BorderSide.none,
+                                      shape: const StadiumBorder()),
+                                  child: const Text('Update profile',
+                                      style: defaultText)))
+                        ],
+                      ))
                 ]))));
   }
 }

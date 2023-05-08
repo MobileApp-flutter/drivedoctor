@@ -1,6 +1,6 @@
 import 'package:drivedoctor/constants/onboarddata.dart';
 import 'package:drivedoctor/constants/textstyle.dart';
-import 'package:drivedoctor/routes/route.dart';
+import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
