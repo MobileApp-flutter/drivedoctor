@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
+  bool _passwordVisible = false;
 
   @override
   void initState() {
@@ -26,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     if (currentUser != null) {
       // Navigate to home page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => DashboardPage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     }
   }
@@ -36,8 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
     try {
-      final UserCredential userCredential =
-          await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       });
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => DashboardPage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -56,6 +56,28 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(
           content: Text(e.message ?? 'An error occurred'),
         ),
+      );
+    }
+  }
+
+  Future<void> _recoverypassword() async {
+    final String email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email.')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset email sent.')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
       );
     }
   }
@@ -103,17 +125,43 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: !_passwordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _recoverypassword,
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 32.0),
                 ElevatedButton(

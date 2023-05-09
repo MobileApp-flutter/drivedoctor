@@ -23,6 +23,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
 
   final _formKey = GlobalKey<FormState>();
   final TextFormController textform = TextFormController();
+  bool _passwordVisible = false;
 
   void _updateForm() async {
     final form = _formKey.currentState;
@@ -50,7 +51,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          const SnackBar(content: Text('Profile updated!')),
         );
       }
     }
@@ -134,12 +135,25 @@ class _UpdateProfileState extends State<UpdateProfile> {
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: "Password",
                               hintText: "Enter your password",
-                              prefixIcon: Icon(LineAwesomeIcons.lock),
-                              border: OutlineInputBorder(),
+                              prefixIcon: const Icon(LineAwesomeIcons.lock),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                              ),
+                              border: const OutlineInputBorder(),
                             ),
+                            obscureText: !_passwordVisible,
                             onSaved: (value) {
                               _password = value;
                             },

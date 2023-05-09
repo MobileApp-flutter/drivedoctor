@@ -64,7 +64,7 @@ class AuthChecker extends StatelessWidget {
             if (user == null) {
               return const LoginPage();
             } else {
-              return DashboardPage();
+              return const DashboardPage();
             }
           } else {
             return Onboarding(

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/shopservice.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +26,10 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
     if (form!.validate()) {
       form.save();
 
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final userCollection = FirebaseFirestore.instance.collection('users');
+      final userQuerySnapshot =
+          await userCollection.where('email', isEqualTo: Auth.email).get();
+      final email = userQuerySnapshot.docs.first.data()['email'];
 
       try {
         await createShop(
@@ -32,23 +37,23 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
           companyname: _companyname,
           companycontact: _companytelno,
           address: _address,
-          ownerId: currentUser!.uid,
+          email: email,
         );
 
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
+          const SnackBar(content: Text('Shop Registration successful!')),
         );
+
+        //navigate to profile page
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, profile);
       } on FirebaseAuthException catch (e) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
       }
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful!')),
-      );
     }
   }
 

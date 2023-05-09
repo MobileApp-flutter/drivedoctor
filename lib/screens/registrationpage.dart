@@ -20,8 +20,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String _email = '';
   int _telno = 0;
   String _password = '';
-  // String _confirmPassword = '';
-  // String _address = '';
+
+  //text editing controller
+  final TextEditingController _pass = TextEditingController();
+  final TextEditingController _confirmPass = TextEditingController();
 
   void _submitForm() async {
     final form = _formKey.currentState;
@@ -35,8 +37,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             username: _username,
             fullname: _fullname,
             contact: _telno,
-            email: _email,
-            password: _password);
+            email: _email);
 
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
@@ -60,7 +61,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               Navigator.of(context).pop();
             },
             icon: const Icon(LineAwesomeIcons.angle_left)),
-        title: const Text('User Registration Page'),
+        title: const Text('Register'),
         backgroundColor: Colors.blue.shade800,
       ),
       body: Padding(
@@ -186,6 +187,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                       ),
                       child: TextFormField(
+                        controller: _pass,
                         decoration: InputDecoration(
                             labelText: ' Password',
                             labelStyle: TextStyle(color: Colors.blue.shade800)),
@@ -203,31 +205,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // Container(
-                    //   decoration: BoxDecoration(
-                    //     borderRadius: BorderRadius.circular(8),
-                    //     border: Border.all(
-                    //       color: Colors.grey.shade400,
-                    //       width: 1,
-                    //     ),
-                    //   ),
-                    //   child: TextFormField(
-                    //     decoration: InputDecoration(
-                    //         labelText: ' Confirm Password',
-                    //         labelStyle: TextStyle(color: Colors.blue.shade800)),
-                    //     obscureText: true,
-                    //     validator: (value) {
-                    //       if (value!.isEmpty) {
-                    //         return 'Please confirm your password';
-                    //       }
-                    //       if (value != _password) {
-                    //         return 'Passwords do not match';
-                    //       }
-                    //       return null;
-                    //     },
-                    //     onSaved: (value) => _confirmPassword = value!,
-                    //   ),
-                    // ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                          width: 1,
+                        ),
+                      ),
+                      child: TextFormField(
+                        controller: _confirmPass,
+                        decoration: InputDecoration(
+                            labelText: ' Confirm Password',
+                            labelStyle: TextStyle(color: Colors.blue.shade800)),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != _pass.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),

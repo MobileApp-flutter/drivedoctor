@@ -7,7 +7,6 @@ Future createUser({
   required String fullname,
   required int contact,
   required String email,
-  required String password,
 }) async {
   final docUser = FirebaseFirestore.instance.collection('users').doc();
 
@@ -16,7 +15,6 @@ Future createUser({
     'fullname': fullname,
     'contact': contact,
     'email': email,
-    'password': password,
   };
 
   await docUser.set(json);
@@ -50,8 +48,6 @@ Future<void> updateUser({
   }
 
   if (password != null && password.isNotEmpty) {
-    dataToUpdate['password'] = password;
-
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser?.uid == id) {
       await currentUser?.updatePassword(password);
