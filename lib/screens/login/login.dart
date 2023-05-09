@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter your email'),
           backgroundColor: Colors.red,
         ),
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (_passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter your password'),
           backgroundColor: Colors.red,
         ),
@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
       });
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => DashboardPage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -74,14 +74,14 @@ class _LoginPageState extends State<LoginPage> {
       });
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Email not found. Please check your email.'),
             backgroundColor: Colors.red,
           ),
         );
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Invalid password. Please check your password.'),
             backgroundColor: Colors.red,
           ),
