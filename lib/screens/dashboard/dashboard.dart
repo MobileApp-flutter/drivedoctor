@@ -1,5 +1,7 @@
+import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:flutter/material.dart';
-import 'bottom_navigation_bar.dart';
+import '../../widgets/bottom_navigation_bar.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -8,21 +10,64 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DriveDoctor'),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blue.shade800,
+        elevation: 0,
+        title: Row(
+          children: [
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.blue.shade800,
+                child: Image.asset(
+                  'assets/logo_white.png',
+                  height: 60,
+                  width: 60,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            FutureBuilder<UserData>(
+              future:
+                  Auth.getUserDataByEmail(Auth.email), // pass email as argument
+              builder: (context, snapshot) {
+                final username = snapshot.data?.username;
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  // check if snapshot has data
+                  return const Text('Welcome, Guest');
+                } else {
+                  return Text(
+                    'Welcome, $username',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+              },
+            )
+          ],
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBarWidget(
-      currentIndex: 0, // Replace with your current index variable// Replace with your onTabTapped callback function
-),
+      bottomNavigationBar: const BottomNavigationBarWidget(
+        currentIndex:
+            0, // Replace with your current index variable// Replace with your onTabTapped callback function
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -30,11 +75,11 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Car Services',
                     style: TextStyle(
                       fontSize: 18.0,
@@ -45,7 +90,7 @@ class DashboardPage extends StatelessWidget {
                     onPressed: () {
                       // View All button clicked
                     },
-                    child: Text('View All'),
+                    child: const Text('View All'),
                   ),
                 ],
               ),

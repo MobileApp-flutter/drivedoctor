@@ -1,3 +1,4 @@
+import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
@@ -6,6 +7,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -14,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
+  bool _passwordVisible = false;
 
   @override
   void initState() {
@@ -23,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     if (currentUser != null) {
       // Navigate to home page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => DashboardPage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     }
   }
@@ -54,14 +57,14 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final UserCredential userCredential =
-          await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
       setState(() {
         _isLoading = false;
       });
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => DashboardPage()),
       );
@@ -94,6 +97,28 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _recoverypassword() async {
+    final String email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email.')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset email sent.')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,25 +134,17 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'DriveDoctor',
-                  style: TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 32.0),
                 Image.asset(
-                  'assets/garage.png',
-                  height: 100.0,
-                  width: 100.0,
+                  'assets/logo.png',
+                  // height: 100.0,
+                  // width: 100.0,
                 ),
-                const SizedBox(height: 32.0),
+                // const SizedBox(height: 25.0),
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -144,12 +161,24 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: !_passwordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
@@ -157,17 +186,49 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _recoverypassword,
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 32.0),
                 ElevatedButton(
                   onPressed: _login,
                   child: const Text('Login'),
                 ),
                 const SizedBox(height: 16.0),
-                const Text(
-                  "Don't have an account? Register now!",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.grey,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, userRegister);
+                  },
+                  child: const Text(
+                    "Don't have an account? Register now!",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, dashboard);
+                  },
+                  child: const Text(
+                    "Skip to dashboard",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ],

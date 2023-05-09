@@ -1,3 +1,4 @@
+import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 
@@ -5,13 +6,14 @@ class BottomNavigationBarWidget extends StatelessWidget {
   final int currentIndex;
 
   const BottomNavigationBarWidget({
+    super.key,
     required this.currentIndex,
   });
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
@@ -57,6 +59,10 @@ class BottomNavigationBarWidget extends StatelessWidget {
       case 3:
         break;
       case 4:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Profile()),
+        );
         break;
       default:
         break;
