@@ -7,6 +7,8 @@ import 'package:drivedoctor/bloc/controller/productController.dart';
 
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navigation_bar.dart';
+import 'allProduct.dart';
+import 'allShop.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -120,6 +122,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   ElevatedButton(
                     onPressed: () {
                       // View All button clicked
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CarServiceShopListPage()),
+                      );
                     },
                     child: const Text('View All'),
                   ),
@@ -199,6 +206,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   ElevatedButton(
                     onPressed: () {
                       // View All button clicked
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProductListPage()),
+                      );
                     },
                     child: Text('View All'),
                   ),
@@ -249,7 +261,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                         ),
                                       ),
                                       Text(
-                                        'Price: \$${product.price.toStringAsFixed(2)}',
+                                        'Price: \RM${product.price.toStringAsFixed(2)}',
                                       ),
                                       FutureBuilder<ShopData?>(
                                         future: _shopController
