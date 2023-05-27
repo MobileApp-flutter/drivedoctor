@@ -4,6 +4,7 @@ import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/controller/shopController.dart';
 import 'package:drivedoctor/bloc/controller/productController.dart';
+import 'package:drivedoctor/screens/dashboard/searchResultPage.dart';
 
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navigation_bar.dart';
@@ -21,6 +22,7 @@ class _DashboardPageState extends State<DashboardPage> {
   String searchOption = 'all'; // Add searchOption variable
   List<ShopData> shops = [];
   List<ProductData> products = [];
+  TextEditingController searchTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +91,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   TextField(
                     decoration: InputDecoration(
                       hintText: 'Search',
-                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          // Call the updateFilteredItems function when the search icon is pressed
+                          updateFilteredItems(searchTextController.text);
+                        },
+                      ),
                     ),
+                    controller: searchTextController,
                   ),
                   const SizedBox(width: 10),
                   // Add Radio buttons for search options
@@ -144,8 +153,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    final shops = snapshot.data;
-                    if (shops != null && shops.isNotEmpty) {
+                    shops = snapshot.data ?? [];
+                    if (shops.isNotEmpty) {
                       return ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: shops.length,
@@ -229,9 +238,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    print('Snapshot data: ${snapshot.data}');
-                    final products = snapshot.data;
-                    if (products != null && products.isNotEmpty) {
+                    products = snapshot.data ?? [];
+                    if (products.isNotEmpty) {
                       return ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: products.length,
@@ -313,6 +321,66 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
     );
+  }
+
+  void updateFilteredItems(String searchText) {
+    // Update the filtered shops and products lists based on the search text and search option
+    if (searchOption == 'all') {
+      // Filter both shops and products
+      final filteredShops = shops
+          .where((shop) =>
+              shop.shopname.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+      final filteredProducts = products
+          .where((product) => product.productName
+              .toLowerCase()
+              .contains(searchText.toLowerCase()))
+          .toList();
+
+      // Navigate to the search results page with the filtered lists
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(
+            searchOption: searchOption,
+            shops: filteredShops,
+            products: filteredProducts,
+          ),
+        ),
+      );
+    } else if (searchOption == 'shop') {
+      // Filter only shops
+      final filteredShops = shops.where((shop) =>
+          shop.shopname.toLowerCase().contains(searchText.toLowerCase()));
+
+      // Navigate to the search results page with the filtered list of shops
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(
+            searchOption: searchOption,
+            shops: filteredShops.toList(),
+            products: [],
+          ),
+        ),
+      );
+    } else if (searchOption == 'product') {
+      // Filter only products
+      final filteredProducts = products.where((product) =>
+          product.productName.toLowerCase().contains(searchText.toLowerCase()));
+
+      // Navigate to the search results page with the filtered list of products
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(
+            searchOption: searchOption,
+            shops: [],
+            products: filteredProducts.toList(),
+          ),
+        ),
+      );
+    }
   }
 
   Widget buildSearchOption(String text, String value) {
