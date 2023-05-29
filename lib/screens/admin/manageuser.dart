@@ -5,6 +5,7 @@
 
 import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/screens/admin/updateuserdialog.dart';
+import 'package:drivedoctor/widgets/admin_side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -36,6 +37,13 @@ class _ManageuserState extends State<Manageuser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Manage User'),
+        backgroundColor: Colors.blue.shade800,
+      ),
+      drawer: const Drawer(
+        child: SideMenu(),
+      ),
       body:
           users != null ? buildDataTable() : const CircularProgressIndicator(),
     );
@@ -46,41 +54,24 @@ class _ManageuserState extends State<Manageuser> {
 
     return Center(
       child: Card(
-        child: Column(
-          children: [
-            Container(
-              color: Colors.blue[900],
-              padding: const EdgeInsets.all(16),
-              child: const Center(
-                child: Text(
-                  'Manage User',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        child: Container(
+          color: Colors.white,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              headingRowColor: MaterialStateColor.resolveWith(
+                (states) => Colors.blue[900]!,
               ),
-            ),
-            const SizedBox(height: 50),
-            Container(
-              color: Colors.white,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  headingRowColor: MaterialStateColor.resolveWith(
-                      (states) => Colors.blue[900]!),
-                  sortAscending: isAscending,
-                  sortColumnIndex: sortColumnIndex,
-                  columns: getColumns(columns),
-                  rows: getRows(users!),
-                  dataRowColor:
-                      MaterialStateColor.resolveWith((states) => Colors.white),
-                  dataTextStyle: const TextStyle(color: Colors.black),
-                ),
+              sortAscending: isAscending,
+              sortColumnIndex: sortColumnIndex,
+              columns: getColumns(columns),
+              rows: getRows(users!),
+              dataRowColor: MaterialStateColor.resolveWith(
+                (states) => Colors.white,
               ),
+              dataTextStyle: const TextStyle(color: Colors.black),
             ),
-          ],
+          ),
         ),
       ),
     );

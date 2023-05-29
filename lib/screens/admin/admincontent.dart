@@ -1,4 +1,5 @@
 import 'package:drivedoctor/widgets/admin_header.dart';
+import 'package:drivedoctor/widgets/admin_side_menu.dart';
 import 'package:flutter/material.dart';
 
 class Admincontent extends StatelessWidget {
@@ -7,25 +8,34 @@ class Admincontent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align text to the left
-          children: const [
-            SizedBox(height: 20),
-            Header(),
-            SizedBox(height: 40), // Add some vertical spacing
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal:
-                      16), // Add horizontal padding to align text to the left
-              child: Text(
-                "This is where admin manage the user",
-                style: TextStyle(fontSize: 18), // Set the desired font size
-              ),
+      child: Builder(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: const Text('Admin Dashboard'),
+            backgroundColor: Colors.blue.shade800,
+          ),
+          drawer: const Drawer(
+            child:
+                SideMenu(), // Replace SideMenu with your actual drawer content
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                SizedBox(height: 20),
+                Header(),
+                SizedBox(height: 40),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    "This is where admin manages the user",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -24,18 +24,11 @@ class _ManageusercontentState extends State<Manageusercontent> {
     return Theme(
       data: ThemeData.dark(), // Set the desired dark blue background color
       child: Scaffold(
+        drawer: const SideMenu(), // Add the SideMenu widget as the drawer
         body: SafeArea(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: _toggleSidebar,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: _isSidebarOpen ? 250 : 60,
-                  child: const SideMenu(),
-                ),
-              ),
               Expanded(
                 flex: _isSidebarOpen ? 5 : 1,
                 child: GestureDetector(

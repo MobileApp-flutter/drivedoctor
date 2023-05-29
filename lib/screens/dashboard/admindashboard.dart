@@ -26,25 +26,9 @@ class _AdmindashboardState extends State<Admindashboard> {
         body: SafeArea(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: _toggleSidebar,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: _isSidebarOpen ? 250 : 60,
-                  child: const SideMenu(),
-                ),
-              ),
+            children: const [
               Expanded(
-                flex: _isSidebarOpen ? 5 : 1,
-                child: GestureDetector(
-                  onTap: () {
-                    if (_isSidebarOpen) {
-                      _toggleSidebar();
-                    }
-                  },
-                  child: const Admincontent(),
-                ),
+                child: Admincontent(),
               ),
             ],
           ),
