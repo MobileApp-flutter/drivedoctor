@@ -4,7 +4,7 @@ import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/controller/shopController.dart';
 import 'package:drivedoctor/bloc/controller/productController.dart';
-import 'package:drivedoctor/screens/dashboard/searchResultPage.dart';
+import 'package:drivedoctor/screens/dashboard/searchresult.dart';
 
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navigation_bar.dart';
@@ -15,6 +15,7 @@ class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _DashboardPageState createState() => _DashboardPageState();
 }
 
@@ -26,8 +27,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ShopController _shopController = ShopController();
-    final ProductController _productController = ProductController();
+    final ShopController shopController = ShopController();
+    final ProductController productController = ProductController();
 
     return Scaffold(
       appBar: AppBar(
@@ -95,7 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                         onPressed: () {
                           // Call the updateFilteredItems function when the search icon is pressed
                           updateFilteredItems(searchTextController.text);
@@ -142,14 +143,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
             ),
-            SizedBox(height: 10.0),
-            Container(
+            const SizedBox(height: 10.0),
+            SizedBox(
               height: 200.0,
               child: FutureBuilder<List<ShopData>>(
-                future: _shopController.getShops(), // Retrieve shops data
+                future: shopController.getShops(), // Retrieve shops data
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -161,7 +162,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         itemBuilder: (BuildContext context, int index) {
                           final shop = shops[index];
                           return Card(
-                            margin: EdgeInsets.all(8.0),
+                            margin: const EdgeInsets.all(8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -172,14 +173,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                   fit: BoxFit.cover,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         shop.shopname,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -194,18 +195,18 @@ class _DashboardPageState extends State<DashboardPage> {
                         },
                       );
                     } else {
-                      return Text('No car services available');
+                      return const Text('No car services available');
                     }
                   }
                 },
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Shop Now',
                     style: TextStyle(
                       fontSize: 18.0,
@@ -221,20 +222,20 @@ class _DashboardPageState extends State<DashboardPage> {
                             builder: (context) => ProductListPage()),
                       );
                     },
-                    child: Text('View All'),
+                    child: const Text('View All'),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 8.0),
-            Container(
+            const SizedBox(height: 8.0),
+            SizedBox(
               height: 200.0,
               child: FutureBuilder<List<ProductData>>(
                 future:
-                    _productController.getProducts(), // Retrieve products data
+                    productController.getProducts(), // Retrieve products data
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -246,7 +247,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         itemBuilder: (BuildContext context, int index) {
                           final product = products[index];
                           return Card(
-                            margin: EdgeInsets.all(8.0),
+                            margin: const EdgeInsets.all(8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -257,35 +258,37 @@ class _DashboardPageState extends State<DashboardPage> {
                                   fit: BoxFit.cover,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         product.productName,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
-                                        'Price: \RM${product.price.toStringAsFixed(2)}',
+                                        'Price: RM${product.price.toStringAsFixed(2)}',
                                       ),
                                       FutureBuilder<ShopData?>(
-                                        future: _shopController
+                                        future: shopController
                                             .getShopById(product.shopId),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {
-                                            return CircularProgressIndicator();
+                                            return const CircularProgressIndicator();
                                           } else if (snapshot.hasError) {
-                                            return Text('Error fetching shop');
+                                            return const Text(
+                                                'Error fetching shop');
                                           } else {
                                             final shop = snapshot.data;
                                             if (shop != null) {
                                               return Text(shop.shopname);
                                             } else {
-                                              return Text('Shop not found');
+                                              return const Text(
+                                                  'Shop not found');
                                             }
                                           }
                                         },
@@ -299,24 +302,24 @@ class _DashboardPageState extends State<DashboardPage> {
                         },
                       );
                     } else {
-                      return Text('No products available');
+                      return const Text('No products available');
                     }
                   }
                 },
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Align(
               alignment: Alignment.center,
               child: ElevatedButton.icon(
                 onPressed: () {
                   // Go to MyShop button clicked
                 },
-                icon: Icon(Icons.shop), // Add the shop icon
-                label: Text('Go to My Shop'),
+                icon: const Icon(Icons.shop), // Add the shop icon
+                label: const Text('Go to My Shop'),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
           ],
         ),
       ),
@@ -360,7 +363,7 @@ class _DashboardPageState extends State<DashboardPage> {
           builder: (context) => SearchResultsPage(
             searchOption: searchOption,
             shops: filteredShops.toList(),
-            products: [],
+            products: const [],
           ),
         ),
       );
@@ -375,7 +378,7 @@ class _DashboardPageState extends State<DashboardPage> {
         MaterialPageRoute(
           builder: (context) => SearchResultsPage(
             searchOption: searchOption,
-            shops: [],
+            shops: const [],
             products: filteredProducts.toList(),
           ),
         ),

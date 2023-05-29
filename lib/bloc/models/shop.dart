@@ -5,6 +5,7 @@ class ShopData {
   final String shopname;
   final String companyname;
   final String companycontact;
+  final String companyemail;
   final String address;
   final String owneremail;
   String imageUrl;
@@ -15,6 +16,7 @@ class ShopData {
     required this.shopname,
     required this.companyname,
     required this.companycontact,
+    required this.companyemail,
     required this.address,
     required this.owneremail,
     this.imageUrl =
@@ -30,6 +32,7 @@ class ShopData {
       shopname: data['shopname'],
       companyname: data['companyname'],
       companycontact: data['companycontact'],
+      companyemail: data['companyemail'],
       address: data['address'],
       owneremail: data['email'],
       imageUrl: data['imageUrl'] ??

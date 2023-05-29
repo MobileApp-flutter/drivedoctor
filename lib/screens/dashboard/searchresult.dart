@@ -21,8 +21,10 @@ class SearchResultsPage extends StatelessWidget {
       results = [...shops, ...products];
     } else if (searchOption == 'shop') {
       results = shops;
-    } else {
+    } else if (searchOption == 'product') {
       results = products;
+    } else {
+      results = Null as List;
     }
 
     return Scaffold(
@@ -38,7 +40,7 @@ class SearchResultsPage extends StatelessWidget {
           } else if (result is ProductData) {
             return _buildProductItem(result, context);
           } else {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
         },
       ),
@@ -46,11 +48,11 @@ class SearchResultsPage extends StatelessWidget {
   }
 
   Widget _buildShopItem(ShopData shop, BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 120,
       child: ListTile(
-        contentPadding: EdgeInsets.all(16.0),
-        leading: Container(
+        contentPadding: const EdgeInsets.all(16.0),
+        leading: SizedBox(
           width: 80,
           height: 80,
           child: Image.network(
@@ -60,7 +62,7 @@ class SearchResultsPage extends StatelessWidget {
         ),
         title: Text(
           shop.shopname,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -71,14 +73,14 @@ class SearchResultsPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.star, color: Colors.yellow),
-                SizedBox(width: 4.0),
+                const Icon(Icons.star, color: Colors.yellow),
+                const SizedBox(width: 4.0),
                 Text(shop.rating.toString()),
               ],
             ),
             Text(
               shop.address,
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         ),
@@ -90,11 +92,11 @@ class SearchResultsPage extends StatelessWidget {
   }
 
   Widget _buildProductItem(ProductData product, BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 120, // Adjust the height as desired
       child: ListTile(
-        contentPadding: EdgeInsets.all(16.0),
-        leading: Container(
+        contentPadding: const EdgeInsets.all(16.0),
+        leading: SizedBox(
           width: 80,
           height: 80,
           child: Image.network(
@@ -104,7 +106,7 @@ class SearchResultsPage extends StatelessWidget {
         ),
         title: Text(
           product.productName,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -115,14 +117,14 @@ class SearchResultsPage extends StatelessWidget {
           children: [
             Text(
               'RM${product.price.toStringAsFixed(2)}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             Text(
               product.description,
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         ),
