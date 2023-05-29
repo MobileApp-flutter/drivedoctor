@@ -18,7 +18,8 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
 
   String _shopname = '';
   String _companyname = '';
-  int _companytelno = 0;
+  String _companytelno = '';
+  String _companyemail = '';
   String _address = '';
 
   void _submitForm() async {
@@ -36,6 +37,7 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
           shopname: _shopname,
           companyname: _companyname,
           companycontact: _companytelno,
+          companyemail: _companyemail,
           address: _address,
           email: email,
         );
@@ -154,7 +156,29 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
                           }
                           return null;
                         },
-                        onSaved: (value) => _companytelno = int.parse(value!),
+                        onSaved: (value) => _companytelno = value!,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                          width: 1,
+                        ),
+                      ),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                            labelText: ' Shop Email',
+                            labelStyle: TextStyle(color: Colors.blue.shade800)),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter shop email';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) => _companyemail = value!,
                       ),
                     ),
                     const SizedBox(height: 5),

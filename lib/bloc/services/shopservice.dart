@@ -20,7 +20,8 @@ class ShopService {
 Future createShop({
   required String shopname,
   required String companyname,
-  required int companycontact,
+  required String companycontact,
+  required String companyemail,
   required String address,
   required String email,
 }) async {
@@ -31,6 +32,7 @@ Future createShop({
     'shopname': shopname,
     'companyname': companyname,
     'companycontact': companycontact,
+    'companyemail': companyemail,
     'address': address,
     'email': email,
   };

@@ -1,4 +1,6 @@
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/screens/admin/manageusercontent.dart';
+import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 import 'package:drivedoctor/screens/dashboard/shopdashboard.dart';
 import 'package:drivedoctor/screens/login/login.dart';
@@ -22,8 +24,12 @@ Route<dynamic>? createRoute(settings) {
       return MaterialPageRoute(builder: (context) => const ShopResgisterPage());
     case shopDashboard:
       return MaterialPageRoute(builder: (context) => const Shopdashboard());
-    case addService:
+  case addService:
       return MaterialPageRoute(builder: (context) => Services());
+    case adminDashboard:
+      return MaterialPageRoute(builder: (context) => const Admindashboard());
+    case manageUser:
+      return MaterialPageRoute(builder: (context) => const Manageusercontent());
   }
   return null;
 }
