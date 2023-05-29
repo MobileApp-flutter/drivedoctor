@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/servicesservice.dart';
 
+// ignore: must_be_immutable
 class Services extends StatelessWidget {
   Services({Key? key}) : super(key: key);
 
@@ -14,25 +15,40 @@ class Services extends StatelessWidget {
   String _servicename = '';
   String _serviceprice = '';
   String _waittime = '';
+  String _servicedesc = '';
 
   void _submitForm(BuildContext context) async {
     final form = _formKey.currentState;
     if (form!.validate()) {
       form.save();
 
+      //get the shopId of the current user
+      final shopQuerySnapshot = await FirebaseFirestore.instance
+          .collection('shops')
+          .where('email', isEqualTo: Auth.email)
+          .get();
+
+      final shopDoc = shopQuerySnapshot.docs.first.reference;
+      final shopId = shopDoc.id;
+
       try {
         await createService(
           servicename: _servicename,
           serviceprice: _serviceprice,
           waittime: _waittime,
+          servicedesc: _servicedesc,
+          shopId: shopId, //add the shopId parameter
         );
 
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Service Added')),
         );
 
-        Navigator.pushReplacementNamed(context, profile);
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, shopDashboard);
       } on FirebaseAuthException catch (e) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
@@ -46,11 +62,11 @@ class Services extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacementNamed(context, shopDashboard);
           },
           icon: const Icon(LineAwesomeIcons.angle_left),
         ),
-        title: const Text('Register'),
+        title: const Text('Register Service'),
         backgroundColor: Colors.blue.shade800,
       ),
       body: Padding(
@@ -139,6 +155,28 @@ class Services extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                          width: 1,
+                        ),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Service description',
+                          labelStyle: TextStyle(color: Colors.blue.shade800),
+                        ),
+                        maxLines:
+                            null, // Allows the text field to expand to multiple lines
+                        keyboardType:
+                            TextInputType.multiline, // Enables multiline input
+                        onChanged: (value) {
+                          _servicedesc = value;
+                        },
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),

@@ -4,11 +4,13 @@ class ServiceData {
   final String servicename;
   final String serviceprice;
   final String waittime;
+  final String servicedesc;
 
   ServiceData({
     required this.servicename,
     required this.serviceprice,
     required this.waittime,
+    required this.servicedesc,
   });
 
   factory ServiceData.fromSnapshot(DocumentSnapshot snapshot) {
@@ -18,6 +20,7 @@ class ServiceData {
       servicename: data['servicename'],
       serviceprice: data['serviceprice'],
       waittime: data['waittime'],
+      servicedesc: data['servicedesc'],
     );
   }
 }

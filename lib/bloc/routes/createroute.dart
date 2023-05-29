@@ -5,9 +5,9 @@ import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 import 'package:drivedoctor/screens/dashboard/shopdashboard.dart';
 import 'package:drivedoctor/screens/login/login.dart';
 import 'package:drivedoctor/screens/profile/profile.dart';
-import 'package:drivedoctor/screens/registrationpage.dart';
-import 'package:drivedoctor/screens/shopregisterpage.dart';
-import 'package:drivedoctor/screens/services/services.dart';
+import 'package:drivedoctor/screens/register/registrationpage.dart';
+import 'package:drivedoctor/screens/register/shopregisterpage.dart';
+import 'package:drivedoctor/screens/register/servicesregistration.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic>? createRoute(settings) {
@@ -24,7 +24,7 @@ Route<dynamic>? createRoute(settings) {
       return MaterialPageRoute(builder: (context) => const ShopResgisterPage());
     case shopDashboard:
       return MaterialPageRoute(builder: (context) => const Shopdashboard());
-  case addService:
+    case addService:
       return MaterialPageRoute(builder: (context) => Services());
     case adminDashboard:
       return MaterialPageRoute(builder: (context) => const Admindashboard());

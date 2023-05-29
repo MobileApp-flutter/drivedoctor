@@ -17,34 +17,25 @@ class ServicesService {
   }
 }
 
-//create shop
+//create service
 Future createService({
   required String servicename,
   required String serviceprice,
   required String waittime,
+  required String servicedesc,
+  required String shopId, //add the shopId parameter
 }) async {
   final serviceDoc = FirebaseFirestore.instance.collection('services').doc();
-  final shopId = serviceDoc.id;
 
   final serviceData = {
     'servicename': servicename,
     'serviceprice': serviceprice,
     'waittime': waittime,
+    'servicedesc': servicedesc,
+    'shopId': shopId, //add the shopId field
   };
 
   await serviceDoc.set(serviceData);
-
-  // update user's shop ID
-  final userQuerySnapshot = await FirebaseFirestore.instance
-      .collection('services')
-      .where('email', isEqualTo: Auth.email)
-      .get();
-  if (userQuerySnapshot.docs.isNotEmpty) {
-    final userDoc = userQuerySnapshot.docs.first.reference;
-    await userDoc.update({'shopId': shopId});
-  } else {
-    logger.e('User not found.');
-  }
 }
 
 //check shop exist
