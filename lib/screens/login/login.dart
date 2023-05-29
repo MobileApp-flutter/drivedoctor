@@ -1,4 +1,5 @@
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
@@ -64,10 +65,23 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _isLoading = false;
       });
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const DashboardPage()),
-      );
+
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        // Check if the user is an admin
+        if (currentUser.email == 'admin@example.com') {
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Admindashboard()),
+          );
+        } else {
+          // Navigate to regular user dashboard
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const DashboardPage()),
+          );
+        }
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         _isLoading = false;

@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserData {
   final String? id;
-  final String username;
-  final String fullname;
-  final int contact;
+  late final String username;
+  late final String fullname;
+  late final int contact;
 
   UserData({
     this.id,
