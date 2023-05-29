@@ -18,7 +18,7 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
 
   String _shopname = '';
   String _companyname = '';
-  int _companytelno = 0;
+  String _companytelno = '';
   String _companyemail = '';
   String _address = '';
 
@@ -156,7 +156,7 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
                           }
                           return null;
                         },
-                        onSaved: (value) => _companytelno = int.parse(value!),
+                        onSaved: (value) => _companytelno = value!,
                       ),
                     ),
                     const SizedBox(height: 5),

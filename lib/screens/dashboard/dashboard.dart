@@ -3,13 +3,13 @@ import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/controller/shopController.dart';
-import 'package:drivedoctor/bloc/controller/productController.dart';
+import 'package:drivedoctor/bloc/controller/productcontroller.dart';
 import 'package:drivedoctor/screens/dashboard/searchresult.dart';
 
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navigation_bar.dart';
-import 'allProduct.dart';
-import 'allShop.dart';
+import 'allproduct.dart';
+import 'allshop.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);

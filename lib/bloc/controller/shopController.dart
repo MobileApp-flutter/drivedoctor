@@ -6,14 +6,19 @@ class ShopController {
       FirebaseFirestore.instance.collection('shops');
 
   Future<List<ShopData>> getShops() async {
-    try {
-      final QuerySnapshot snapshot = await shopsCollection.get();
+    final shopDoc = await FirebaseFirestore.instance.collection("shops").get();
+    final shopData =
+        shopDoc.docs.map((doc) => ShopData.fromSnapshot(doc)).toList();
 
-      return snapshot.docs.map((doc) => ShopData.fromSnapshot(doc)).toList();
-    } catch (error) {
-      print('Error fetching shops: $error');
-      return [];
-    }
+    return shopData;
+    // try {
+    //   final QuerySnapshot snapshot = await shopsCollection.get();
+
+    //   return snapshot.docs.map((doc) => ShopData.fromSnapshot(doc)).toList();
+    // } catch (error) {
+    //   print('Error fetching shops: $error');
+    //   return [];
+    // }
   }
 
   Future<ShopData?> getShopById(String shopId) async {

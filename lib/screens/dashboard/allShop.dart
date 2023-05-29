@@ -9,15 +9,16 @@ class CarServiceShopListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Car Service Shops'),
+        title: const Text('Car Service Shops'),
       ),
       body: FutureBuilder<List<ShopData>>(
         future: _shopController.getShops(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error fetching car service shops'));
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError || !snapshot.hasData) {
+            return const Center(
+                child: Text('Error fetching car service shops'));
           } else {
             final carServices = snapshot.data;
             if (carServices != null && carServices.isNotEmpty) {
@@ -25,11 +26,11 @@ class CarServiceShopListPage extends StatelessWidget {
                 itemCount: carServices.length,
                 itemBuilder: (context, index) {
                   final carService = carServices[index];
-                  return Container(
+                  return SizedBox(
                     height: 120,
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(16.0),
-                      leading: Container(
+                      contentPadding: const EdgeInsets.all(16.0),
+                      leading: SizedBox(
                         width: 80,
                         height: 80,
                         child: Image.network(
@@ -39,7 +40,7 @@ class CarServiceShopListPage extends StatelessWidget {
                       ),
                       title: Text(
                         carService.shopname,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -50,14 +51,14 @@ class CarServiceShopListPage extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.star, color: Colors.yellow),
-                              SizedBox(width: 4.0),
+                              const Icon(Icons.star, color: Colors.yellow),
+                              const SizedBox(width: 4.0),
                               Text(carService.rating.toString()),
                             ],
                           ),
                           Text(
                             carService.address,
-                            style: TextStyle(fontSize: 12),
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ],
                       ),
@@ -73,7 +74,8 @@ class CarServiceShopListPage extends StatelessWidget {
                 },
               );
             } else {
-              return Center(child: Text('No car service shops available'));
+              return const Center(
+                  child: Text('No car service shops available'));
             }
           }
         },
