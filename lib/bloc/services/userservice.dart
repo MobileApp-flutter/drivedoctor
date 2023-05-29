@@ -65,7 +65,6 @@ Future<void> updateUser({
 //admin update user
 Future<void> adminupdateUser({
   String? id,
-  String? email,
   String? username,
   String? fullname,
   int? contact,

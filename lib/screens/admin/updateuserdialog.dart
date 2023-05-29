@@ -101,6 +101,29 @@ class _UpdateuserdialogState extends State<Updateuserdialog> {
         TextButton(
           onPressed: () async {
             // Update user logic
+            await adminupdateUser(
+              id: widget.user.id,
+              username: updateusername,
+              fullname: updatefullname,
+              contact: updatecontact,
+            );
+
+            // Show a successful update message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('User updated successfully'),
+                backgroundColor: Colors.white,
+              ),
+            );
+
+            Navigator.pop(context);
+
+            // Update the local user object with the new data
+            setState(() {
+              widget.user.username = updateusername!;
+              widget.user.fullname = updatefullname!;
+              widget.user.contact = updatecontact!;
+            });
           },
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.all(Colors.black),
@@ -115,8 +138,19 @@ class _UpdateuserdialogState extends State<Updateuserdialog> {
           child: const Text('Update'),
         ),
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             // Delete user logic
+            await deleteUser(widget.user.id);
+
+            // Show a successful update message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('User updated successfully'),
+                backgroundColor: Colors.white,
+              ),
+            );
+
+            Navigator.pop(context);
           },
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.all(Colors.black),
