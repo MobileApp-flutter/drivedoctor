@@ -1,4 +1,5 @@
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
@@ -34,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter your email'),
           backgroundColor: Colors.red,
         ),
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (_passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter your password'),
           backgroundColor: Colors.red,
         ),
@@ -64,24 +65,37 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _isLoading = false;
       });
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => DashboardPage()),
-      );
+
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        // Check if the user is an admin
+        if (currentUser.email == 'admin@example.com') {
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Admindashboard()),
+          );
+        } else {
+          // Navigate to regular user dashboard
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const DashboardPage()),
+          );
+        }
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         _isLoading = false;
       });
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Email not found. Please check your email.'),
             backgroundColor: Colors.red,
           ),
         );
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Invalid password. Please check your password.'),
             backgroundColor: Colors.red,
           ),

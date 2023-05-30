@@ -3,6 +3,7 @@
 // import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:drivedoctor/bloc/routes/createroute.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 
@@ -51,7 +52,7 @@ class SplashScreen extends StatelessWidget {
 class AuthChecker extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  AuthChecker({super.key});
+  AuthChecker({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -59,17 +60,26 @@ class AuthChecker extends StatelessWidget {
       future: _checkOnboardingCompleted(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data == true) {
+          if (snapshot.data == false) {
             final User? user = FirebaseAuth.instance.currentUser;
             if (user == null) {
               return const LoginPage();
             } else {
-              return const DashboardPage();
+              // Check if the user is an admin or a regular user
+              if (user.email == "admin@example.com") {
+                return const Admindashboard();
+              } else {
+                return const DashboardPage();
+              }
             }
           } else {
             return Onboarding(
               onComplete: () {
-                Navigator.pushReplacementNamed(context, login);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Admindashboard()),
+                );
               },
             );
           }

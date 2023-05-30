@@ -46,6 +46,13 @@ dependencies:
 
   #logger
   logger: ^1.3.0
+  provider: ^6.0.5
+
+  #image_picker
+  image_picker: ^0.8.7+4
+
+  #side menu
+  easy_sidemenu: ^0.4.1+1
 
 dev_dependencies:
   flutter_test:
