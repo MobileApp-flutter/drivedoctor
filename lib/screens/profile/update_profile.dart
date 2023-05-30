@@ -1,8 +1,12 @@
 import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/controller/textform.dart';
+import 'package:drivedoctor/bloc/models/user.dart';
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:drivedoctor/bloc/services/userservice.dart';
 import 'package:drivedoctor/constants/textstyle.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
@@ -24,6 +28,20 @@ class _UpdateProfileState extends State<UpdateProfile> {
   final _formKey = GlobalKey<FormState>();
   final TextFormController textform = TextFormController();
   bool _passwordVisible = false;
+
+  int _countOfReload = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    startAutoReload();
+  }
+
+  void startAutoReload() {
+    setState(() {
+      _countOfReload++;
+    });
+  }
 
   void _updateForm() async {
     final form = _formKey.currentState;
@@ -59,6 +77,14 @@ class _UpdateProfileState extends State<UpdateProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final Storage storage = Storage();
+    String imageName = 'profile.jpg';
+
+    void onRefresh() {
+      // Refresh the data.
+      storage.fetchProfilePicture(imageName);
+    }
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue.shade800,
@@ -73,64 +99,159 @@ class _UpdateProfileState extends State<UpdateProfile> {
             child: Container(
                 padding: const EdgeInsets.all(20),
                 child: Column(children: [
-                  Stack(
-                    children: [
-                      SizedBox(
-                        width: 120,
-                        height: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: const CircleAvatar(
-                            backgroundImage:
-                                AssetImage('assets/background.jpeg'),
-                          ),
+                  Container(
+                    alignment: Alignment.topCenter,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            FutureBuilder<String>(
+                              future: storage.fetchProfilePicture(imageName),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  // While waiting for the future to resolve
+                                  return const CircularProgressIndicator();
+                                } else {
+                                  if (snapshot.hasError) {
+                                    // Error occurred while fetching the download URL
+                                    print(snapshot.error);
+                                  }
+
+                                  String downloadUrl =
+                                      snapshot.data?.toString() ?? '';
+                                  final imageProvider = downloadUrl.isNotEmpty
+                                      ? NetworkImage(downloadUrl)
+                                          as ImageProvider
+                                      : const AssetImage('assets/user.png');
+
+                                  return CircleAvatar(
+                                    radius: 70,
+                                    backgroundImage: imageProvider,
+                                  );
+                                }
+                              },
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey[300],
+                              ),
+                              child: IconButton(
+                                onPressed: () async {
+                                  final results =
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.image,
+                                    allowMultiple: false,
+                                  );
+
+                                  if (results == null) {
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('No File selected.'),
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
+                                  final path = results.files.single.path;
+                                  const fileName = 'profile.jpg';
+
+                                  // Check if the selected file is a JPG
+                                  if (path!.endsWith('.jpg')) {
+                                    await storage.uploadProfilePicture(
+                                        path, fileName);
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Please select a JPG image.'),
+                                      ),
+                                    );
+                                  }
+
+                                  onRefresh();
+                                },
+                                icon: const Icon(
+                                  Icons.add_a_photo_rounded,
+                                  size: 25,
+                                ),
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            width: 35,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: Colors.blue.shade800,
-                            ),
-                            child: const Icon(
-                              LineAwesomeIcons.camera,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ))
-                    ],
+                        const SizedBox(height: 6),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 50),
                   Form(
                       key: _formKey,
                       child: Column(
                         children: [
-                          TextFormField(
-                            controller: textform.usernameController,
-                            decoration: const InputDecoration(
-                              labelText: "Username",
-                              hintText: "Enter your username",
-                              prefixIcon: Icon(LineAwesomeIcons.user),
-                              border: OutlineInputBorder(),
-                            ),
-                            onSaved: (value) {
-                              _username = value;
+                          FutureBuilder<UserData>(
+                            future: Auth.getUserDataByEmail(Auth.email),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<UserData> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // While waiting for the future to resolve
+                                return const CircularProgressIndicator();
+                              } else {
+                                String username = snapshot.hasData
+                                    ? snapshot.data!.username
+                                    : 'Guest';
+
+                                return TextFormField(
+                                  controller: textform.usernameController,
+                                  decoration: InputDecoration(
+                                    labelText: "Username",
+                                    hintText: username,
+                                    prefixIcon:
+                                        const Icon(LineAwesomeIcons.user),
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  onSaved: (value) {
+                                    _username = value;
+                                  },
+                                );
+                              }
                             },
                           ),
                           const SizedBox(height: 20),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "Fullname",
-                              hintText: "Enter your fullname",
-                              prefixIcon: Icon(LineAwesomeIcons.user_check),
-                              border: OutlineInputBorder(),
-                            ),
-                            onSaved: (value) {
-                              _fullname = value;
+                          FutureBuilder<UserData>(
+                            future: Auth.getUserDataByEmail(Auth.email),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<UserData> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // While waiting for the future to resolve
+                                return const CircularProgressIndicator();
+                              } else {
+                                String fullname = snapshot.hasData
+                                    ? snapshot.data!.fullname
+                                    : 'Guest';
+
+                                return TextFormField(
+                                  decoration: InputDecoration(
+                                    labelText: "Fullname",
+                                    hintText: fullname,
+                                    prefixIcon:
+                                        const Icon(LineAwesomeIcons.user_check),
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  onSaved: (value) {
+                                    _fullname = value;
+                                  },
+                                );
+                              }
                             },
                           ),
                           const SizedBox(height: 20),
@@ -159,16 +280,33 @@ class _UpdateProfileState extends State<UpdateProfile> {
                             },
                           ),
                           const SizedBox(height: 20),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "Contact",
-                              hintText: "Enter your contact",
-                              prefixIcon: Icon(LineAwesomeIcons.phone),
-                              border: OutlineInputBorder(),
-                            ),
-                            onSaved: (value) {
-                              if (value != null && value.isNotEmpty) {
-                                _contact = int.parse(value);
+                          FutureBuilder<UserData>(
+                            future: Auth.getUserDataByEmail(Auth.email),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<UserData> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // While waiting for the future to resolve
+                                return const CircularProgressIndicator();
+                              } else {
+                                String contact = snapshot.hasData
+                                    ? snapshot.data!.contact.toString()
+                                    : 'Guest';
+
+                                return TextFormField(
+                                  decoration: InputDecoration(
+                                    labelText: "Contact",
+                                    hintText: contact,
+                                    prefixIcon:
+                                        const Icon(LineAwesomeIcons.phone),
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  onSaved: (value) {
+                                    if (value != null && value.isNotEmpty) {
+                                      _contact = int.parse(value);
+                                    }
+                                  },
+                                );
                               }
                             },
                           ),

@@ -2,7 +2,6 @@
 // import 'package:drivedoctor/screens/onboarding/onboarding.dart';
 // import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:drivedoctor/bloc/routes/createroute.dart';
-import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
