@@ -35,6 +35,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   line_awesome_flutter: ^2.0.0
   flutter_svg: ^2.0.5
+  cached_network_image: ^3.2.0
+
 
   #splashscreen
   shared_preferences: ^2.1.0

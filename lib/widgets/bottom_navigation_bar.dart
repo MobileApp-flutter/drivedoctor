@@ -1,6 +1,7 @@
 import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
+import 'package:drivedoctor/screens/dashboard/marketdashboard.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
   final int currentIndex;
@@ -55,10 +56,17 @@ class BottomNavigationBarWidget extends StatelessWidget {
         // Navigate to Cart page (CartPage)
         break;
       case 2:
+        // Navigate to Marketplace page (MarketDashboardPage)
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MarketDashboardPage()),
+        );
         break;
       case 3:
+        // Navigate to Shop page (ShopPage)
         break;
       case 4:
+        // Navigate to Profile page (Profile)
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const Profile()),
