@@ -95,7 +95,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
                         child: Column(
                           children: [
                             Image.asset(
-                              'assets/shop_image.png',
+                              'assets/shop_image.jpg',
                               width: 120,
                               height: 120,
                               fit: BoxFit.cover,

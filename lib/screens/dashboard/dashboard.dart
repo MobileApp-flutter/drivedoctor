@@ -5,7 +5,6 @@ import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/controller/shopController.dart';
 import 'package:drivedoctor/bloc/controller/productcontroller.dart';
 import 'package:drivedoctor/screens/dashboard/searchresult.dart';
-import 'package:drivedoctor/screens/dashboard/marketdashboard.dart';
 
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navigation_bar.dart';
