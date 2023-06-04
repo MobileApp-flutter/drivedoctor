@@ -1,5 +1,4 @@
 import 'package:drivedoctor/screens/admin/admincontent.dart';
-import 'package:drivedoctor/widgets/admin_side_menu.dart';
 import 'package:flutter/material.dart';
 
 class Admindashboard extends StatefulWidget {

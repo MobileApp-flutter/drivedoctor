@@ -42,7 +42,7 @@ class _ManageuserState extends State<Manageuser> {
         backgroundColor: Colors.blue.shade800,
       ),
       drawer: const Drawer(
-        child: SideMenu(),
+        child: AdminSideMenu(),
       ),
       body:
           users != null ? buildDataTable() : const CircularProgressIndicator(),

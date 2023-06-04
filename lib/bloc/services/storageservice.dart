@@ -31,6 +31,25 @@ class Storage {
     }
   }
 
+  //upload shop picture
+  Future<void> uploadShopProfilePic(
+    String filePath,
+    String fileName,
+  ) async {
+    //get current user uid
+    String uid = auth.currentUser!.uid;
+
+    File file = File(filePath);
+
+    try {
+      await storage.ref('$uid/shop/$fileName').putFile(file);
+    } on firebase_core.FirebaseException catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
   //fetch profile picture
   Future<String> fetchProfilePicture(String imageName) async {
     //get current user uid
@@ -38,6 +57,19 @@ class Storage {
 
     String downloadURL = await storage
         .ref('$uid/user/$imageName')
+        .getDownloadURL()
+        .then((value) => value.toString());
+
+    return downloadURL;
+  }
+
+  //fetch shop profile picture
+  Future<String> fetchShopProfilePicture(String imageName) async {
+    //get current user uid
+    String uid = auth.currentUser!.uid;
+
+    String downloadURL = await storage
+        .ref('$uid/shop/$imageName')
         .getDownloadURL()
         .then((value) => value.toString());
 

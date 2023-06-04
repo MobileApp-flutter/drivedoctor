@@ -5,6 +5,7 @@ const String profile = '/profile';
 const String userRegister = '/register';
 const String shopRegister = '/shopreg';
 const String shopDashboard = '/shopdash';
+const String shopProfile = '/shoprofile';
 const String addService = '/addService';
 const String adminDashboard = '/admindash';
 const String manageUser = '/manageuser';

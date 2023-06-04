@@ -3,8 +3,8 @@ import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/authservice.dart';
 import 'package:flutter/material.dart';
 
-class SideMenu extends StatelessWidget {
-  const SideMenu({
+class AdminSideMenu extends StatelessWidget {
+  const AdminSideMenu({
     super.key,
   });
 

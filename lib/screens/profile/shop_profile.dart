@@ -1,74 +1,68 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/controller/textform.dart';
-import 'package:drivedoctor/bloc/models/user.dart';
+import 'package:drivedoctor/bloc/models/shop.dart';
+import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/bloc/services/shopservice.dart';
 import 'package:drivedoctor/bloc/services/storageservice.dart';
-import 'package:drivedoctor/bloc/services/userservice.dart';
 import 'package:drivedoctor/constants/textstyle.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
-class UpdateProfile extends StatefulWidget {
-  const UpdateProfile({Key? key}) : super(key: key);
+class ShopProfile extends StatefulWidget {
+  const ShopProfile({Key? key}) : super(key: key);
 
   @override
-  State<UpdateProfile> createState() => _UpdateProfileState();
+  State<ShopProfile> createState() => _ShopProfileState();
 }
 
-class _UpdateProfileState extends State<UpdateProfile> {
-  String? id;
-  String? _username;
-  String? _fullname;
-  String? _password;
-  int? _contact;
-  String? email;
+class _ShopProfileState extends State<ShopProfile> {
+  String? _shopname;
+  String? _companyname;
+  String? _companycontact;
+  String? _companyemail;
+  String? _address;
 
   final _formKey = GlobalKey<FormState>();
   final TextFormController textform = TextFormController();
-  bool _passwordVisible = false;
 
-  int _countOfReload = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    startAutoReload();
-  }
-
-  void startAutoReload() {
-    setState(() {
-      _countOfReload++;
-    });
-  }
-
-  void _updateForm() async {
+  void _updateShop() async {
     final form = _formKey.currentState;
     if (form!.validate()) {
       form.save();
 
       try {
-        final currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser != null) {
-          await updateUser(
-            id: currentUser.uid,
-            username: _username,
-            fullname: _fullname,
-            contact: _contact,
-            password: _password,
-            email: Auth.email,
-          );
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Profile Updated!')));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error: User not logged in')),
-          );
-        }
+        //get shop id from database
+        final shopDoc = await FirebaseFirestore.instance
+            .collection('shops')
+            .where("email", isEqualTo: Auth.currentUser?.email)
+            .get();
+
+        final email = shopDoc.docs.first.data()['email'];
+
+        //update shop profile
+        await updateShop(
+          // shopId: shopId,
+          shopname: _shopname!,
+          companyname: _companyname!,
+          companycontact: _companycontact!,
+          companyemail: _companyemail!,
+          address: _address!,
+          owneremail: email!,
+        );
+
+        //message
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Profile Updated!')));
+
+        //navigate to shop dashboard
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, shopDashboard);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated!')),
+          SnackBar(content: Text('Error $context')),
         );
       }
     }
@@ -77,22 +71,17 @@ class _UpdateProfileState extends State<UpdateProfile> {
   @override
   Widget build(BuildContext context) {
     final Storage storage = Storage();
-    String imageName = 'profile.jpg';
-
-    void onRefresh() {
-      // Refresh the data.
-      storage.fetchProfilePicture(imageName);
-    }
+    String imageName = 'shop.jpg';
 
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue.shade800,
           leading: IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, shopDashboard);
               },
               icon: const Icon(LineAwesomeIcons.angle_left)),
-          title: const Text("Edit Profile", style: defaultText),
+          title: const Text("Edit shop profile", style: defaultText),
         ),
         body: SingleChildScrollView(
             child: Container(
@@ -125,7 +114,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                   final imageProvider = downloadUrl.isNotEmpty
                                       ? NetworkImage(downloadUrl)
                                           as ImageProvider
-                                      : const AssetImage('assets/user.png');
+                                      : const AssetImage(
+                                          'assets/shop_image.jpg');
 
                                   return CircleAvatar(
                                     radius: 70,
@@ -159,11 +149,11 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                   }
 
                                   final path = results.files.single.path;
-                                  const fileName = 'profile.jpg';
+                                  const fileName = 'shop.jpg';
 
                                   // Check if the selected file is a JPG
                                   if (path!.endsWith('.jpg')) {
-                                    await storage.uploadProfilePicture(
+                                    await storage.uploadShopProfilePic(
                                         path, fileName);
                                   } else {
                                     // ignore: use_build_context_synchronously
@@ -174,8 +164,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       ),
                                     );
                                   }
-
-                                  onRefresh();
                                 },
                                 icon: const Icon(
                                   Icons.add_a_photo_rounded,
@@ -190,120 +178,155 @@ class _UpdateProfileState extends State<UpdateProfile> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 10),
                   Form(
                       key: _formKey,
                       child: Column(
                         children: [
-                          FutureBuilder<UserData>(
-                            future: Auth.getUserDataByEmail(Auth.email),
+                          FutureBuilder<ShopData>(
+                            future: Auth.getShopDataByEmail(Auth.email),
                             builder: (BuildContext context,
-                                AsyncSnapshot<UserData> snapshot) {
+                                AsyncSnapshot<ShopData> snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 // While waiting for the future to resolve
                                 return const CircularProgressIndicator();
                               } else {
-                                String username = snapshot.hasData
-                                    ? snapshot.data!.username
-                                    : 'Guest';
+                                String shopname = snapshot.hasData
+                                    ? snapshot.data!.shopname
+                                    : 'No shop name';
 
                                 return TextFormField(
-                                  controller: textform.usernameController,
+                                  controller: textform.shopnameController,
                                   decoration: InputDecoration(
-                                    labelText: "Username",
-                                    hintText: username,
+                                    labelText: "Shop name",
+                                    hintText: shopname,
                                     prefixIcon:
                                         const Icon(LineAwesomeIcons.user),
                                     border: const OutlineInputBorder(),
                                   ),
                                   onSaved: (value) {
-                                    _username = value;
+                                    _shopname = value;
                                   },
                                 );
                               }
                             },
                           ),
                           const SizedBox(height: 20),
-                          FutureBuilder<UserData>(
-                            future: Auth.getUserDataByEmail(Auth.email),
+                          FutureBuilder<ShopData>(
+                            future: Auth.getShopDataByEmail(Auth.email),
                             builder: (BuildContext context,
-                                AsyncSnapshot<UserData> snapshot) {
+                                AsyncSnapshot<ShopData> snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 // While waiting for the future to resolve
                                 return const CircularProgressIndicator();
                               } else {
-                                String fullname = snapshot.hasData
-                                    ? snapshot.data!.fullname
-                                    : 'Guest';
+                                String companyname = snapshot.hasData
+                                    ? snapshot.data!.companyname
+                                    : 'No company name';
 
                                 return TextFormField(
+                                  controller: textform.companynameController,
                                   decoration: InputDecoration(
-                                    labelText: "Fullname",
-                                    hintText: fullname,
+                                    labelText: "Company name",
+                                    hintText: companyname,
                                     prefixIcon:
-                                        const Icon(LineAwesomeIcons.user_check),
+                                        const Icon(LineAwesomeIcons.user),
                                     border: const OutlineInputBorder(),
                                   ),
                                   onSaved: (value) {
-                                    _fullname = value;
+                                    _companyname = value;
                                   },
                                 );
                               }
                             },
                           ),
                           const SizedBox(height: 20),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: "Password",
-                              hintText: "Enter your password",
-                              prefixIcon: const Icon(LineAwesomeIcons.lock),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _passwordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _passwordVisible = !_passwordVisible;
-                                  });
-                                },
-                              ),
-                              border: const OutlineInputBorder(),
-                            ),
-                            obscureText: !_passwordVisible,
-                            onSaved: (value) {
-                              _password = value;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          FutureBuilder<UserData>(
-                            future: Auth.getUserDataByEmail(Auth.email),
+                          FutureBuilder<ShopData>(
+                            future: Auth.getShopDataByEmail(Auth.email),
                             builder: (BuildContext context,
-                                AsyncSnapshot<UserData> snapshot) {
+                                AsyncSnapshot<ShopData> snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 // While waiting for the future to resolve
                                 return const CircularProgressIndicator();
                               } else {
-                                String contact = snapshot.hasData
-                                    ? snapshot.data!.contact.toString()
-                                    : 'Guest';
+                                String companycontact = snapshot.hasData
+                                    ? snapshot.data!.companycontact
+                                    : 'No company contact';
 
                                 return TextFormField(
+                                  controller: textform.companycontactController,
                                   decoration: InputDecoration(
-                                    labelText: "Contact",
-                                    hintText: contact,
+                                    labelText: "Company contact",
+                                    hintText: companycontact,
                                     prefixIcon:
-                                        const Icon(LineAwesomeIcons.phone),
+                                        const Icon(LineAwesomeIcons.user),
                                     border: const OutlineInputBorder(),
                                   ),
                                   onSaved: (value) {
-                                    if (value != null && value.isNotEmpty) {
-                                      _contact = int.parse(value);
-                                    }
+                                    _companycontact = value;
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          FutureBuilder<ShopData>(
+                            future: Auth.getShopDataByEmail(Auth.email),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<ShopData> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // While waiting for the future to resolve
+                                return const CircularProgressIndicator();
+                              } else {
+                                String companyemail = snapshot.hasData
+                                    ? snapshot.data!.companyemail
+                                    : 'No company email';
+
+                                return TextFormField(
+                                  controller: textform.companyemailController,
+                                  decoration: InputDecoration(
+                                    labelText: "Company email",
+                                    hintText: companyemail,
+                                    prefixIcon:
+                                        const Icon(LineAwesomeIcons.user),
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  onSaved: (value) {
+                                    _companyemail = value;
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          FutureBuilder<ShopData>(
+                            future: Auth.getShopDataByEmail(Auth.email),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<ShopData> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // While waiting for the future to resolve
+                                return const CircularProgressIndicator();
+                              } else {
+                                String companyadress = snapshot.hasData
+                                    ? snapshot.data!.address
+                                    : 'No company address';
+
+                                return TextFormField(
+                                  controller: textform.addressController,
+                                  decoration: InputDecoration(
+                                    labelText: "Company address",
+                                    hintText: companyadress,
+                                    prefixIcon:
+                                        const Icon(LineAwesomeIcons.user),
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  onSaved: (value) {
+                                    _address = value;
                                   },
                                 );
                               }
@@ -313,12 +336,12 @@ class _UpdateProfileState extends State<UpdateProfile> {
                           SizedBox(
                               width: 150,
                               child: ElevatedButton(
-                                  onPressed: _updateForm,
+                                  onPressed: _updateShop,
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue.shade800,
                                       side: BorderSide.none,
                                       shape: const StadiumBorder()),
-                                  child: const Text('Update profile',
+                                  child: const Text('Update shop',
                                       style: defaultText)))
                         ],
                       ))
