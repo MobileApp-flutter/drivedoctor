@@ -198,14 +198,40 @@ class _ProfileState extends State<Profile> {
                             } else if (snapshot.hasData &&
                                 snapshot.data != null) {
                               // shop exists
-                              return ProfileWidget(
-                                title: 'Shop Dashboard',
-                                icon: LineAwesomeIcons.store,
-                                onPress: () {
-                                  Navigator.pushReplacementNamed(
-                                      context, shopDashboard);
-                                },
-                                textColor: textColor,
+                              return Column(
+                                children: [
+                                  ProfileWidget(
+                                    title: 'Shop Dashboard',
+                                    icon: LineAwesomeIcons.store,
+                                    onPress: () {
+                                      Navigator.pushReplacementNamed(
+                                          context, shopDashboard);
+                                    },
+                                    textColor: textColor,
+                                  ),
+                                  ProfileWidget(
+                                    title: 'Delete shop',
+                                    icon: LineAwesomeIcons.trash,
+                                    onPress: () async {
+                                      //delete shop
+                                      await deleteShop(Auth.email);
+
+                                      //show successfully delete message
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Shop deleted successfully'),
+                                          backgroundColor: Colors.white,
+                                        ),
+                                      );
+
+                                      Navigator.pushReplacementNamed(
+                                          context, profile);
+                                    },
+                                    textColor: textColor,
+                                  ),
+                                ],
                               );
                             } else {
                               // shop doesn't exist

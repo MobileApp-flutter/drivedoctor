@@ -105,3 +105,15 @@ Future<void> updateShop({
     await documentSnapshot.reference.update(dataToUpdate);
   });
 }
+
+//delete shop
+Future<void> deleteShop(String email) async {
+  final docShop = FirebaseFirestore.instance
+      .collection('shops')
+      .where('email', isEqualTo: email);
+
+  await docShop.get().then((querySnapshot) async {
+    final documentSnapshot = querySnapshot.docs.first;
+    await documentSnapshot.reference.delete();
+  });
+}
