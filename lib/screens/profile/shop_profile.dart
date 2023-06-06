@@ -33,7 +33,7 @@ class _ShopProfileState extends State<ShopProfile> {
       form.save();
 
       try {
-        //get shop id from database
+        //get shop details from database
         final shopDoc = await FirebaseFirestore.instance
             .collection('shops')
             .where("email", isEqualTo: Auth.currentUser?.email)
@@ -96,7 +96,8 @@ class _ShopProfileState extends State<ShopProfile> {
                           alignment: Alignment.bottomRight,
                           children: [
                             FutureBuilder<String>(
-                              future: storage.fetchProfilePicture(imageName),
+                              future:
+                                  storage.fetchShopProfilePicture(imageName),
                               builder: (BuildContext context,
                                   AsyncSnapshot<String> snapshot) {
                                 if (snapshot.connectionState ==

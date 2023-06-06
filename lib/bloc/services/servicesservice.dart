@@ -19,15 +19,18 @@ class ServicesService {
 
 //create service
 Future createService({
+  required String serviceId,
   required String servicename,
   required String serviceprice,
   required String waittime,
   required String servicedesc,
   required String shopId, //add the shopId parameter
 }) async {
-  final serviceDoc = FirebaseFirestore.instance.collection('services').doc();
+  final serviceDoc =
+      FirebaseFirestore.instance.collection('services').doc(serviceId);
 
   final serviceData = {
+    'serviceId': serviceId,
     'servicename': servicename,
     'serviceprice': serviceprice,
     'waittime': waittime,
