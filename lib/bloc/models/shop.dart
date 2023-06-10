@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'feedback.dart';
+
 class ShopData {
   final String shopId; // Add shopId property
   final String shopname;
@@ -10,6 +12,7 @@ class ShopData {
   final String owneremail;
   String imageUrl;
   double rating;
+  List<FeedbackData> feedbacks;
 
   ShopData({
     required this.shopId,
@@ -22,6 +25,7 @@ class ShopData {
     this.imageUrl =
         "https://images.unsplash.com/photo-1615906655593-ad0386982a0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
     this.rating = 5,
+    this.feedbacks = const [],
   });
 
   factory ShopData.fromSnapshot(DocumentSnapshot snapshot) {

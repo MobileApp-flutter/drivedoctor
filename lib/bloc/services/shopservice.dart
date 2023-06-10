@@ -29,6 +29,7 @@ Future createShop({
   final shopId = shopDoc.id;
 
   final shopData = {
+    'shopId' : shopId,
     'shopname': shopname,
     'companyname': companyname,
     'companycontact': companycontact,

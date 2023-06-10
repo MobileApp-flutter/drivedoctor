@@ -184,7 +184,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text('Rating: ${shop.rating}'),
+                                      Text('Rating: ${shop.rating.toStringAsFixed(2)}'),
                                       Text(shop.companyname),
                                     ],
                                   ),
