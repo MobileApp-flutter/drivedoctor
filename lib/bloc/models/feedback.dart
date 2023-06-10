@@ -18,11 +18,7 @@ class FeedbackData {
   });
 
   factory FeedbackData.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data() as Map<String, dynamic>?;
-
-    if (data == null) {
-      throw Exception('Invalid snapshot data');
-    }
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
     final shopId = data['shopId'] as String?;
     final userId = data['userId'] as String?;
