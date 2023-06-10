@@ -23,6 +23,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   String? _password;
   int? _contact;
   String? email;
+  String? profilePicture;
 
   final _formKey = GlobalKey<FormState>();
   final TextFormController textform = TextFormController();
@@ -161,10 +162,22 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                   final path = results.files.single.path;
                                   const fileName = 'profile.jpg';
 
+                                  //get current user uid
+                                  final currentUser =
+                                      FirebaseAuth.instance.currentUser?.uid;
+
                                   // Check if the selected file is a JPG
                                   if (path!.endsWith('.jpg')) {
                                     await storage.uploadProfilePicture(
                                         path, fileName);
+
+                                    String imageUrl =
+                                        await storage.getDownloadURL(
+                                            'users/$currentUser/$fileName');
+
+                                    setState(() {
+                                      profilePicture = imageUrl;
+                                    });
                                   } else {
                                     // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(

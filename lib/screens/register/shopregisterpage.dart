@@ -79,19 +79,6 @@ class _ShopResgisterPageState extends State<ShopResgisterPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Container(
-                  alignment: Alignment.topCenter,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Column(
-                    children: const [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: AssetImage('assets/user.png'),
-                      ),
-                      SizedBox(height: 6),
-                    ],
-                  ),
-                ),
                 Column(
                   children: [
                     Container(

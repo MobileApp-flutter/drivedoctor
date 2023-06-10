@@ -4,6 +4,8 @@ import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/controller/shopController.dart';
 import 'package:drivedoctor/bloc/controller/productcontroller.dart';
+import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:drivedoctor/screens/dashboard/searchresult.dart';
 
 import 'package:flutter/material.dart';
@@ -24,6 +26,9 @@ class _DashboardPageState extends State<DashboardPage> {
   List<ShopData> shops = [];
   List<ProductData> products = [];
   TextEditingController searchTextController = TextEditingController();
+
+  final Storage storage = Storage();
+  String imageName = 'shop.jpg';
 
   @override
   Widget build(BuildContext context) {
@@ -117,13 +122,15 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
             ),
+
+            //display shops. when select it list out services available
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Car Services',
+                    'Shops',
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -147,7 +154,7 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(
               height: 200.0,
               child: FutureBuilder<List<ShopData>>(
-                future: shopController.getShops(), // Retrieve shops data
+                future: shopController.getShops(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -156,46 +163,87 @@ class _DashboardPageState extends State<DashboardPage> {
                   } else {
                     shops = snapshot.data ?? [];
                     if (shops.isNotEmpty) {
-                      return ListView.builder(
+                      return ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: shops.length,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const SizedBox(
+                                width: 8.0), // Customize the separator width
                         itemBuilder: (BuildContext context, int index) {
                           final shop = shops[index];
-                          return Card(
-                            margin: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.network(
-                                  shop.imageUrl,
-                                  height: 100.0,
-                                  width: 150.0,
-                                  fit: BoxFit.cover,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        shop.shopname,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
+                          return GestureDetector(
+                            onTap: () {
+                              //navigate the shop details page.
+                              Navigator.pushReplacementNamed(
+                                  context, shopDetail,
+                                  arguments: shop.shopId);
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  FutureBuilder<String>(
+                                      future: storage.fetchShopProfilePicture(
+                                          shop.shopId, imageName),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<String> snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        } else if (snapshot.hasError ||
+                                            !snapshot.hasData) {
+                                          return Image.network(
+                                            shop.imageUrl,
+                                            height: 120.0,
+                                            width: 200.0,
+                                            fit: BoxFit.cover,
+                                          );
+                                        } else {
+                                          String downloadUrl =
+                                              snapshot.data?.toString() ?? '';
+                                          final imageProvider =
+                                              downloadUrl.isNotEmpty
+                                                  ? NetworkImage(downloadUrl)
+                                                      as ImageProvider
+                                                  : const AssetImage(
+                                                      'assets/shop_image.jpg');
+
+                                          return Image(
+                                            image: imageProvider,
+                                            height: 120.0,
+                                            width: 200.0,
+                                            fit: BoxFit.cover,
+                                          );
+                                        }
+                                      }),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          shop.shopname,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      Text('Rating: ${shop.rating}'),
-                                      Text(shop.companyname),
-                                    ],
+                                        Text('Rating: ${shop.rating}'),
+                                        Text(shop.companyname),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },
                       );
                     } else {
-                      return const Text('No car services available');
+                      return const Text('No shops available');
                     }
                   }
                 },

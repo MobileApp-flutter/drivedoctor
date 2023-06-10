@@ -88,7 +88,8 @@ class _ShopdashboardState extends State<Shopdashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     FutureBuilder<String>(
-                      future: storage.fetchShopProfilePicture(imageName),
+                      future: Auth.getShopId(Auth.email).then((shopId) =>
+                          storage.fetchShopProfilePicture(shopId, imageName)),
                       builder: (BuildContext context,
                           AsyncSnapshot<String> snapshot) {
                         if (snapshot.connectionState ==
@@ -96,7 +97,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
                           // While waiting for the future to resolve
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError || !snapshot.hasData) {
-                          return const Text('You have not registered the shop');
+                          return const Text('No shop profile picture yet');
                         } else {
                           String downloadUrl = snapshot.data?.toString() ?? '';
                           final imageProvider = downloadUrl.isNotEmpty
@@ -176,13 +177,19 @@ class _ShopdashboardState extends State<Shopdashboard> {
                 SizedBox(
                   height: 200.0,
                   child: FutureBuilder<List<ServiceData>>(
-                    future: serviceController.getServices(),
+                    future: Auth.getShopId(Auth.email).then((shopId) =>
+                        serviceController.getServicesByShopId(shopId)),
                     builder: (BuildContext context,
                         AsyncSnapshot<List<ServiceData>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
                       } else if (snapshot.hasError || !snapshot.hasData) {
-                        return const Text('Error fetching services');
+                        return const SizedBox(
+                            height: 50.0,
+                            child: Text('Error fetching services'));
+                      } else if (snapshot.data!.isEmpty) {
+                        return const SizedBox(
+                            height: 50.0, child: Text('No services added yet'));
                       } else {
                         final services = snapshot.data!;
 

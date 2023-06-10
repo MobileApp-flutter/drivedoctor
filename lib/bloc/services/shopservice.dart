@@ -29,6 +29,7 @@ Future createShop({
   final shopId = shopDoc.id;
 
   final shopData = {
+    'shopId': shopId,
     'shopname': shopname,
     'companyname': companyname,
     'companycontact': companycontact,
@@ -78,6 +79,7 @@ Future<void> updateShop({
   String? companyemail,
   String? address,
   String? owneremail,
+  String? imageUrl,
 }) async {
   final docShop = FirebaseFirestore.instance
       .collection('shops')
@@ -104,6 +106,20 @@ Future<void> updateShop({
     final documentSnapshot = querySnapshot.docs.first;
     await documentSnapshot.reference.update(dataToUpdate);
   });
+}
+
+//attach strings imageUrl to shop ID
+Future<void> updateShopImageUrl(String shopId, String imageUrl) async {
+  final docShop = FirebaseFirestore.instance.collection('shops').doc(shopId);
+
+  final dataToUpdate = <String, dynamic>{};
+
+  if (imageUrl != null && imageUrl.isNotEmpty) {
+    dataToUpdate['imageUrl'] = imageUrl;
+  }
+  if (dataToUpdate.isEmpty) return;
+
+  await docShop.update(dataToUpdate);
 }
 
 //delete shop
