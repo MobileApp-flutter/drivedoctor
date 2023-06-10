@@ -22,9 +22,9 @@ class ShopData {
     required this.companyemail,
     required this.address,
     required this.owneremail,
-    this.feedbacks = const [],
     required this.imageUrl,
     required this.rating,
+    this.feedbacks = const [],
   });
 
   factory ShopData.fromSnapshot(DocumentSnapshot snapshot) {

@@ -1,5 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
+
 import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/controller/servicecontroller.dart';
 import 'package:drivedoctor/bloc/models/services.dart';
@@ -7,9 +11,7 @@ import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:drivedoctor/widgets/shop_side_menu.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:provider/provider.dart';
+
 import '../../bloc/models/feedback.dart';
 import '../../providers/user_provider.dart';
 import '../../widgets/bottom_navigation_bar.dart';
