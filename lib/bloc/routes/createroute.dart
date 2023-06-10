@@ -1,5 +1,7 @@
+import 'package:drivedoctor/bloc/routes/multiplearguments.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/screens/admin/manageusercontent.dart';
+import 'package:drivedoctor/screens/carservices/servicedetails.dart';
 import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 import 'package:drivedoctor/screens/dashboard/shopdashboard.dart';
@@ -9,6 +11,7 @@ import 'package:drivedoctor/screens/profile/shop_profile.dart';
 import 'package:drivedoctor/screens/register/registrationpage.dart';
 import 'package:drivedoctor/screens/register/shopregisterpage.dart';
 import 'package:drivedoctor/screens/register/servicesregistration.dart';
+import 'package:drivedoctor/screens/shop/shopdetails.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic>? createRoute(settings) {
@@ -27,8 +30,24 @@ Route<dynamic>? createRoute(settings) {
       return MaterialPageRoute(builder: (context) => const Shopdashboard());
     case shopProfile:
       return MaterialPageRoute(builder: (context) => const ShopProfile());
+    case shopDetail:
+      final shopId = settings.arguments as String;
+      return MaterialPageRoute(
+          builder: (context) => Shopdetails(
+                shopId: shopId,
+              ));
     case addService:
       return MaterialPageRoute(builder: (context) => Services());
+    case serviceDetail:
+      final args = settings.arguments as ShopServiceArguments;
+      final serviceId = args.serviceId;
+      final shopId = args.shopId;
+      return MaterialPageRoute(
+        builder: (context) => Servicedetails(
+          serviceId: serviceId,
+          shopId: shopId,
+        ),
+      );
     case adminDashboard:
       return MaterialPageRoute(builder: (context) => const Admindashboard());
     case manageUser:

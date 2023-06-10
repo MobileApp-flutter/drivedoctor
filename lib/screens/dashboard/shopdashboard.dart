@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/controller/servicecontroller.dart';
@@ -164,7 +165,8 @@ class _ShopdashboardState extends State<Shopdashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     FutureBuilder<String>(
-                      future: storage.fetchShopProfilePicture(imageName),
+                      future: Auth.getShopId(Auth.email).then((shopId) =>
+                          storage.fetchShopProfilePicture(shopId, imageName)),
                       builder: (BuildContext context,
                           AsyncSnapshot<String> snapshot) {
                         if (snapshot.connectionState ==
@@ -172,7 +174,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
                           // While waiting for the future to resolve
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError || !snapshot.hasData) {
-                          return const Text('You have not registered the shop');
+                          return const Text('No shop profile picture yet');
                         } else {
                           String downloadUrl = snapshot.data?.toString() ?? '';
                           final imageProvider = downloadUrl.isNotEmpty
@@ -251,90 +253,111 @@ class _ShopdashboardState extends State<Shopdashboard> {
                   ),
                 ),
                 SizedBox(
-                  height: 120.0,
+                  height: 200.0,
                   child: FutureBuilder<List<ServiceData>>(
-                    future: serviceController.getServices(),
-                    builder: (context, snapshot) {
+                    future: Auth.getShopId(Auth.email).then((shopId) =>
+                        serviceController.getServicesByShopId(shopId)),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<ServiceData>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.hasError || !snapshot.hasData) {
+                        return const SizedBox(
+                            height: 50.0,
+                            child: Text('Error fetching services'));
+                      } else if (snapshot.data!.isEmpty) {
+                        return const SizedBox(
+                            height: 50.0, child: Text('No services added yet'));
                       } else {
-                        services = snapshot.data ?? [];
-                        if (services.isNotEmpty) {
-                          return ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: services.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final service = services[index];
+                        final services = snapshot.data!;
 
-                              return SizedBox(
-                                height:
-                                    100.0, // Set the desired height for the card
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        12.0), // Set the border radius
-                                  ),
-                                  margin: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          12.0), // Set the same border radius for the container
-                                      color: Colors.blue,
-                                    ),
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              service.servicename,
-                                              style: const TextStyle(
-                                                fontSize: 16.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors
-                                                    .white, // Set the text color to white
-                                              ),
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: services.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final service = services[index];
+
+                            return SizedBox(
+                              width:
+                                  200.0, // Adjust the width of each card as needed
+                              child: Card(
+                                color: Colors.blue[50],
+                                margin: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FutureBuilder<List<String>>(
+                                      future: storage
+                                          .fetchImages(service.serviceId),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<List<String>>
+                                              snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const CircularProgressIndicator();
+                                        } else if (snapshot.hasError ||
+                                            !snapshot.hasData ||
+                                            snapshot.data!.isEmpty) {
+                                          return Image.asset(
+                                            'assets/shop_image.jpg',
+                                            height: 100.0,
+                                            width: 150.0,
+                                            fit: BoxFit.cover,
+                                          );
+                                        } else {
+                                          return CarouselSlider(
+                                            options: CarouselOptions(
+                                              height: 100.0,
+                                              aspectRatio: 16 / 9,
+                                              enlargeCenterPage: true,
+                                              enableInfiniteScroll: false,
                                             ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 20.0),
-                                        Center(
-                                          child: Text(
+                                            items: snapshot.data!.map((image) {
+                                              return Image.network(
+                                                image,
+                                                fit: BoxFit.cover,
+                                              );
+                                            }).toList(),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            service.servicename,
+                                            style: const TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
                                             'Price: RM ${service.serviceprice}',
                                             style: const TextStyle(
                                               fontSize: 14.0,
                                               fontWeight: FontWeight.normal,
-                                              color: Colors
-                                                  .white, // Set the text color to white
                                             ),
                                           ),
-                                        ),
-                                        const Spacer(),
-                                        Center(
-                                          child: Text(
+                                          Text(
                                             'Waiting Time: ${service.waittime}',
                                             style: const TextStyle(
                                               fontSize: 14.0,
                                               fontWeight: FontWeight.normal,
-                                              color: Colors
-                                                  .white, // Set the text color to white
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              );
-                            },
-                          );
-                        } else {
-                          return const Text('No services found');
-                        }
+                              ),
+                            );
+                          },
+                        );
                       }
                     },
                   ),
@@ -365,14 +388,14 @@ class _ShopdashboardState extends State<Shopdashboard> {
                     ],
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 200.0,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: 1,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
-                        margin: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -383,10 +406,10 @@ class _ShopdashboardState extends State<Shopdashboard> {
                               fit: BoxFit.cover,
                             ),
                             Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [],
+                                children: const [],
                               ),
                             ),
                           ],

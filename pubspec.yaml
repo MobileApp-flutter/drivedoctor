@@ -47,6 +47,12 @@ dependencies:
   provider: ^6.0.5
   shared_preferences: ^2.1.0
 
+  #carousel
+  carousel_slider: ^4.2.1
+
+  #styled-test
+  styled_text: ^1.0.0
+
 dev_dependencies:
 
   # The "flutter_lints" package below contains a set of recommended lints to

@@ -23,6 +23,7 @@ class _ShopProfileState extends State<ShopProfile> {
   String? _companycontact;
   String? _companyemail;
   String? _address;
+  String? _shopImage;
 
   final _formKey = GlobalKey<FormState>();
   final TextFormController textform = TextFormController();
@@ -33,7 +34,7 @@ class _ShopProfileState extends State<ShopProfile> {
       form.save();
 
       try {
-        //get shop id from database
+        //get shop details from database
         final shopDoc = await FirebaseFirestore.instance
             .collection('shops')
             .where("email", isEqualTo: Auth.currentUser?.email)
@@ -96,7 +97,9 @@ class _ShopProfileState extends State<ShopProfile> {
                           alignment: Alignment.bottomRight,
                           children: [
                             FutureBuilder<String>(
-                              future: storage.fetchProfilePicture(imageName),
+                              future: Auth.getShopId(Auth.email).then(
+                                  (shopId) => storage.fetchShopProfilePicture(
+                                      shopId, imageName)),
                               builder: (BuildContext context,
                                   AsyncSnapshot<String> snapshot) {
                                 if (snapshot.connectionState ==
@@ -104,10 +107,10 @@ class _ShopProfileState extends State<ShopProfile> {
                                   // While waiting for the future to resolve
                                   return const CircularProgressIndicator();
                                 } else {
-                                  if (snapshot.hasError) {
-                                    // Error occurred while fetching the download URL
-                                    print(snapshot.error);
-                                  }
+                                  // if (snapshot.hasError) {
+                                  //   // Error occurred while fetching the download URL
+                                  //   print(snapshot.error);
+                                  // }
 
                                   String downloadUrl =
                                       snapshot.data?.toString() ?? '';
@@ -144,17 +147,35 @@ class _ShopProfileState extends State<ShopProfile> {
                                         content: Text('No File selected.'),
                                       ),
                                     );
-
                                     return;
                                   }
 
                                   final path = results.files.single.path;
+
+                                  //get shopId
+                                  final shopId =
+                                      await Auth.getShopId(Auth.email);
+
                                   const fileName = 'shop.jpg';
 
                                   // Check if the selected file is a JPG
                                   if (path!.endsWith('.jpg')) {
+                                    // Upload the image to the storage
                                     await storage.uploadShopProfilePic(
-                                        path, fileName);
+                                        path, fileName, shopId);
+
+                                    // Set the imageUrl property of the shop
+                                    String imageUrl =
+                                        await storage.getDownloadURL(
+                                            'shops/$shopId/$fileName');
+
+                                    //set state on shop image
+                                    setState(() {
+                                      _shopImage = imageUrl;
+                                    });
+
+                                    //upload the image to the doc
+                                    // await updateShopImageUrl(shopId, imageUrl);
                                   } else {
                                     // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(

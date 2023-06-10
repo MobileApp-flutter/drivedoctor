@@ -145,7 +145,7 @@ class _UpdateuserdialogState extends State<Updateuserdialog> {
             // Show a successful update message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('User updated successfully'),
+                content: Text('User deleted successfully'),
                 backgroundColor: Colors.white,
               ),
             );

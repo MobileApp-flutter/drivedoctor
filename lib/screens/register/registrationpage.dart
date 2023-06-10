@@ -1,10 +1,7 @@
 import 'package:drivedoctor/bloc/routes/route.dart';
-import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:drivedoctor/bloc/services/userservice.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class RegistrationPage extends StatefulWidget {
