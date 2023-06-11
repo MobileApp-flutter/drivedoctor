@@ -101,8 +101,10 @@ class _ShopdashboardState extends State<Shopdashboard> {
 
   // Fetch feedbacks from Firestore
   Future<List<FeedbackData>> fetchFeedbacks() async {
-    final QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('feedbacks').get();
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('feedbacks')
+        .where('shopId', isEqualTo: shop.shopId)
+        .get();
 
     return querySnapshot.docs.map((doc) {
       return FeedbackData.fromSnapshot(doc);
@@ -471,7 +473,8 @@ class _ShopdashboardState extends State<Shopdashboard> {
                         return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         print('Error fetching feedbacks: ${snapshot.error}');
-                        return Text('Error fetching feedbacks: ${snapshot.error}');
+                        return Text(
+                            'Error fetching feedbacks: ${snapshot.error}');
                       } else {
                         final feedbacks = snapshot.data;
 
