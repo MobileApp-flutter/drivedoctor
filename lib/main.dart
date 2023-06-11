@@ -74,19 +74,20 @@ class AuthChecker extends StatelessWidget {
                 final User? user = FirebaseAuth.instance.currentUser;
                 if (user == null) {
                   userProvider
-                      .setUserId("null"); // Update the userId in UserProvider
+                      .setUserId("null"); 
+                      userProvider.setUserEmail("null");
                   return const LoginPage();
                 } else {
                   // Check if the user is an admin or a regular user
                   if (user.email == "admin@example.com") {
                     userProvider.setUserId(
-                        user.uid); // Update the userId in UserProvider
+                        user.uid);
+                        userProvider.setUserEmail(user.email!);
                     return const Admindashboard();
                   } else {
-                    print("Before setUserId - regular user");
                     userProvider.setUserId(
-                        user.uid); // Update the userId in UserProvider
-                    print("After setUserId - regular user");
+                        user.uid);
+                        userProvider.setUserEmail(user.email!);
                     return const DashboardPage();
                   }
                 }

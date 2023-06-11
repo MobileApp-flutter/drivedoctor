@@ -5,11 +5,12 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/user_provider.dart';
+import '../../services/user_service.dart';
 
 class CreateFeedbackPage extends StatefulWidget {
   final String shopId;
   final String userId;
-  final Function updateFeedbacks; // New callback function
+  final Function updateFeedbacks;
 
   const CreateFeedbackPage({
     required this.shopId,
@@ -24,12 +25,41 @@ class CreateFeedbackPage extends StatefulWidget {
 class _CreateFeedbackPageState extends State<CreateFeedbackPage> {
   double _rating = 0.0;
   TextEditingController _feedbackController = TextEditingController();
+  late String _username; // Add a variable to store the username
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // Fetch the user data when the widget initializes
+  }
+
+  void _loadUserData() async {
+    try {
+      final userService = UserService();
+      final user = await userService.getUserDataById(widget.userId);
+
+      if (user != null) {
+        setState(() {
+          _username = user.username;
+        });
+      } else {
+        setState(() {
+          _username = 'Unknown User';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _username = 'Unknown User';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final userId = userProvider.userId;
     print(userId);
+    final userEmail = userProvider.userEmail;
 
     return Scaffold(
       appBar: AppBar(
@@ -86,6 +116,7 @@ class _CreateFeedbackPageState extends State<CreateFeedbackPage> {
                   text: _feedbackController.text,
                   shopId: widget.shopId,
                   userId: userId,
+                  userEmail: userEmail,
                   dateTime: DateTime.now(),
                 );
 

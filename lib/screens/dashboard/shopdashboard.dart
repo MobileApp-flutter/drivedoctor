@@ -17,7 +17,6 @@ import '../../providers/user_provider.dart';
 import '../../widgets/bottom_navigation_bar.dart';
 import '../feedback/all_feedback.dart';
 import '../feedback/create_feedback.dart';
-import '../feedback/feedback_page.dart';
 
 class Shopdashboard extends StatefulWidget {
   const Shopdashboard({Key? key}) : super(key: key);
@@ -87,7 +86,8 @@ class _ShopdashboardState extends State<Shopdashboard> {
     await updateFeedbacksAndRating();
   }
 
-  void navigateToAllFeedbacksPage() {
+  Future<void> navigateToAllFeedbacksPage() async {
+    List<FeedbackData> feedbacks = await fetchFeedbacks();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -99,11 +99,22 @@ class _ShopdashboardState extends State<Shopdashboard> {
     );
   }
 
+  // Fetch feedbacks from Firestore
+  Future<List<FeedbackData>> fetchFeedbacks() async {
+    final QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('feedbacks').get();
+
+    return querySnapshot.docs.map((doc) {
+      return FeedbackData.fromSnapshot(doc);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ServiceController serviceController = ServiceController();
     UserProvider userProvider = Provider.of<UserProvider>(context);
     String userId = userProvider.userId;
+    String userEmail = userProvider.userEmail;
 
     return SafeArea(
       child: Builder(
@@ -449,45 +460,76 @@ class _ShopdashboardState extends State<Shopdashboard> {
                     child: const Text('View All Feedbacks'),
                   ),
                 ),
-                SizedBox(
-                  height: 120.0,
-                  child: feedbacks.isNotEmpty
-                      ? Card(
-                          margin: const EdgeInsets.all(8.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  feedbacks.first.userId,
-                                  style: const TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10.0),
-                                RatingBarIndicator(
-                                  rating: shopRating,
-                                  itemBuilder: (context, index) => const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
-                                  itemCount: 5,
-                                  itemSize: 20.0,
-                                  direction: Axis.horizontal,
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  feedbacks.first.text,
-                                  style: const TextStyle(fontSize: 14.0),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : const Center(child: Text('No feedbacks available')),
-                ),
+
+                // Display latest feedbacks and ratings
+                Container(
+                  child: FutureBuilder<List<FeedbackData>>(
+                    future:
+                        fetchFeedbacks(), // Fetch feedbacks using the method
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        print('Error fetching feedbacks: ${snapshot.error}');
+                        return Text('Error fetching feedbacks: ${snapshot.error}');
+                      } else {
+                        final feedbacks = snapshot.data;
+
+                        return feedbacks != null && feedbacks.isNotEmpty
+                            ? ListView.separated(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount:
+                                    feedbacks.length > 5 ? 5 : feedbacks.length,
+                                separatorBuilder: (context, index) => Divider(),
+                                itemBuilder: (context, index) {
+                                  final feedback = feedbacks[index];
+
+                                  return Card(
+                                    margin: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            feedback.userEmail,
+                                            style: const TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                          RatingBarIndicator(
+                                            rating: feedback.rating,
+                                            itemBuilder: (context, index) =>
+                                                const Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                            itemCount: 5,
+                                            itemSize: 20.0,
+                                            direction: Axis.horizontal,
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                          Text(
+                                            feedback.text,
+                                            style: const TextStyle(
+                                              fontSize: 14.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : const Text('No feedbacks available');
+                      }
+                    },
+                  ),
+                )
               ],
             ),
           ),
