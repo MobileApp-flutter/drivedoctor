@@ -5,6 +5,8 @@ import 'package:drivedoctor/bloc/routes/createroute.dart';
 import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
+import 'package:drivedoctor/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 import 'package:drivedoctor/screens/login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,13 +28,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>(
+          create: (_) => UserProvider(), // Initialize the UserProvider
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: AuthChecker(),
+        onGenerateRoute: createRoute,
       ),
-      home: AuthChecker(),
-      onGenerateRoute: createRoute,
     );
   }
 }
@@ -55,40 +64,49 @@ class AuthChecker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: _checkOnboardingCompleted(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data == false) {
-            final User? user = FirebaseAuth.instance.currentUser;
-            if (user == null) {
-              return const LoginPage();
-            } else {
-              // Check if the user is an admin or a regular user
-              if (user.email == "admin@example.com") {
-                return const Admindashboard();
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, _) {
+        return FutureBuilder<bool>(
+          future: _checkOnboardingCompleted(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.data == false) {
+                final User? user = FirebaseAuth.instance.currentUser;
+                if (user == null) {
+                  userProvider
+                      .setUserId("null"); 
+                      userProvider.setUserEmail("null");
+                  return const LoginPage();
+                } else {
+                  // Check if the user is an admin or a regular user
+                  if (user.email == "admin@example.com") {
+                    userProvider.setUserId(
+                        user.uid);
+                        userProvider.setUserEmail(user.email!);
+                    return const Admindashboard();
+                  } else {
+                    userProvider.setUserId(
+                        user.uid);
+                        userProvider.setUserEmail(user.email!);
+                    return const DashboardPage();
+                  }
+                }
               } else {
-                return const DashboardPage();
-              }
-            }
-          } else {
-            return Onboarding(
-              onComplete: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const Admindashboard()),
+                return Onboarding(
+                  onComplete: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Admindashboard()),
+                    );
+                  },
                 );
-              },
-            );
-          }
-        } else {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
+              }
+            } else {
+              return const SplashScreen();
+            }
+          },
+        );
       },
     );
   }

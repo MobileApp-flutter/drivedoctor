@@ -68,7 +68,7 @@ class CarServiceShopListPage extends StatelessWidget {
                                     const Icon(Icons.star,
                                         color: Colors.yellow),
                                     const SizedBox(width: 4.0),
-                                    Text(carService.rating.toString()),
+                                    Text(carService.rating.toStringAsFixed(2)),
                                   ],
                                 ),
                                 Text(
