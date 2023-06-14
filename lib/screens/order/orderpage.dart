@@ -181,8 +181,6 @@ class GetAllOrders extends StatelessWidget {
                                 _buildOrderServiceItem(order, context, i),
                             ],
                           );
-                          // return _buildOrderServiceItem(order, context,
-                          //     order.service!.indexOf(order.service![index]));
                           // } else if (order.orderType == 'product') {
                           //   return _buildOrderProductItem(order, context, index);
                         } else {
