@@ -32,4 +32,28 @@ class ServiceData {
       shopId: data['shopId'],
     );
   }
+
+  //toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'serviceId': serviceId,
+      'servicename': servicename,
+      'serviceprice': serviceprice,
+      'waittime': waittime,
+      'servicedesc': servicedesc,
+      'shopId': shopId,
+    };
+  }
+
+  //fromJson
+  factory ServiceData.fromJson(Map<String, dynamic> json) {
+    return ServiceData(
+      serviceId: json['serviceId'],
+      servicename: json['servicename'],
+      serviceprice: json['serviceprice'],
+      waittime: json['waittime'],
+      servicedesc: json['servicedesc'],
+      shopId: json['shopId'],
+    );
+  }
 }

@@ -58,7 +58,7 @@ class _ServicedetailsState extends State<Servicedetails> {
           },
           icon: const Icon(LineAwesomeIcons.angle_left)),
       //put text
-      title: const Text('Shop Details'),
+      title: const Text('Service Details'),
     );
   }
 }
