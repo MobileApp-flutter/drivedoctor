@@ -155,7 +155,7 @@ class GetAllOrders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<OrderData>>(
-        future: orderController.getOrders(),
+        future: orderController.getOrdersByUserID(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

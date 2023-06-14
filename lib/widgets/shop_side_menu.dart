@@ -73,6 +73,13 @@ class ShopSideMenu extends StatelessWidget {
               const Icon(Icons.production_quantity_limits, color: Colors.black),
           onTap: () {},
         ),
+        ListTile(
+          title:
+              const Text("Manage order", style: TextStyle(color: Colors.black)),
+          leading:
+              const Icon(Icons.local_shipping_outlined, color: Colors.black),
+          onTap: () {},
+        ),
       ],
     ));
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/models/order.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/models/services.dart';
@@ -9,9 +10,10 @@ class OrderController {
       FirebaseFirestore.instance.collection("orders");
 
   //get all orders
-  Future<List<OrderData>> getOrders() async {
+  Future<List<OrderData>> getOrdersByUserID() async {
     try {
-      final QuerySnapshot snapshot = await orderCollection.get();
+      final QuerySnapshot snapshot =
+          await orderCollection.where('userId', isEqualTo: Auth.uid).get();
 
       final List<OrderData> orders = [];
 
