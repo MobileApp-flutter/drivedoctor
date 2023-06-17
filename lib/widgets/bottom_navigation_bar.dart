@@ -1,6 +1,9 @@
+import 'package:drivedoctor/screens/order/orderpage.dart';
 import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
+import 'package:drivedoctor/screens/dashboard/marketdashboard.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
   final int currentIndex;
@@ -27,8 +30,8 @@ class BottomNavigationBarWidget extends StatelessWidget {
           label: 'Marketplace',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag),
-          label: 'Shop',
+          icon: Icon(LineAwesomeIcons.shipping_fast),
+          label: 'Orders',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
@@ -55,10 +58,21 @@ class BottomNavigationBarWidget extends StatelessWidget {
         // Navigate to Cart page (CartPage)
         break;
       case 2:
+        // Navigate to Marketplace page (MarketDashboardPage)
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MarketDashboardPage()),
+        );
         break;
       case 3:
+        // Navigate to Order page (OrderPage)
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Orderpage()),
+        );
         break;
       case 4:
+        // Navigate to Profile page (Profile)
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const Profile()),

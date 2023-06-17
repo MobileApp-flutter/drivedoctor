@@ -1,23 +1,33 @@
+import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../bloc/controller/productController.dart';
 import '../../bloc/models/product.dart';
 
 class ProductListPage extends StatelessWidget {
   final ProductController _productController = ProductController();
 
+  ProductListPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product List'),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, dashboard);
+            },
+            icon: const Icon(LineAwesomeIcons.angle_left)),
+        title: const Text('Shop List'),
+        backgroundColor: Colors.blue.shade800,
       ),
       body: FutureBuilder<List<ProductData>>(
         future: _productController.getProducts(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error fetching products'));
+            return const Center(child: Text('Error fetching products'));
           } else {
             final products = snapshot.data;
             if (products != null && products.isNotEmpty) {
@@ -25,11 +35,11 @@ class ProductListPage extends StatelessWidget {
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  return Container(
+                  return SizedBox(
                     height: 120, // Adjust the height as desired
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(16.0),
-                      leading: Container(
+                      contentPadding: const EdgeInsets.all(16.0),
+                      leading: SizedBox(
                         width: 80,
                         height: 80,
                         child: Image.network(
@@ -39,7 +49,7 @@ class ProductListPage extends StatelessWidget {
                       ),
                       title: Text(
                         product.productName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -50,14 +60,14 @@ class ProductListPage extends StatelessWidget {
                         children: [
                           Text(
                             'RM${product.price.toStringAsFixed(2)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           Text(
                             product.description,
-                            style: TextStyle(fontSize: 12),
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ],
                       ),
@@ -70,7 +80,7 @@ class ProductListPage extends StatelessWidget {
                 },
               );
             } else {
-              return Center(child: Text('No products available'));
+              return const Center(child: Text('No products available'));
             }
           }
         },

@@ -41,4 +41,34 @@ class ProductData {
       totalSold: data['totalSold'] ?? 0,
     );
   }
+
+  //toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'productId': productId,
+      'productName': productName,
+      'description': description,
+      'price': price,
+      'imageUrl': imageUrl,
+      'shopId': shopId,
+      'rating': rating,
+      'stock': stock,
+      'totalSold': totalSold,
+    };
+  }
+
+  //fromJson
+  factory ProductData.fromJson(Map<String, dynamic> json) {
+    return ProductData(
+      productId: json['productId'],
+      productName: json['productName'],
+      description: json['description'],
+      price: json['price'],
+      imageUrl: json['imageUrl'],
+      shopId: json['shopId'],
+      rating: json['rating'],
+      stock: json['stock'],
+      totalSold: json['totalSold'],
+    );
+  }
 }

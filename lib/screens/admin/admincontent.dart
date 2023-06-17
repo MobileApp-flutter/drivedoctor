@@ -16,7 +16,7 @@ class Admincontent extends StatelessWidget {
           ),
           drawer: const Drawer(
             child:
-                SideMenu(), // Replace SideMenu with your actual drawer content
+                AdminSideMenu(), // Replace SideMenu with your actual drawer content
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(8),

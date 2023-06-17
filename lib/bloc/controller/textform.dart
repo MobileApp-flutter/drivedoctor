@@ -6,4 +6,11 @@ class TextFormController {
   final fullnameController = TextEditingController();
   final passwordController = TextEditingController();
   final contactController = TextEditingController();
+
+  //shop form controller
+  final shopnameController = TextEditingController();
+  final companynameController = TextEditingController();
+  final companycontactController = TextEditingController();
+  final companyemailController = TextEditingController();
+  final addressController = TextEditingController();
 }

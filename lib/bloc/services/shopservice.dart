@@ -29,6 +29,7 @@ Future createShop({
   final shopId = shopDoc.id;
 
   final shopData = {
+    'shopId': shopId,
     'shopname': shopname,
     'companyname': companyname,
     'companycontact': companycontact,
@@ -67,4 +68,68 @@ Future<ShopData?> hasShopRegistered(String email) async {
   final shop = ShopData.fromSnapshot(shopDoc.docs.first);
 
   return shop;
+}
+
+//update shop
+Future<void> updateShop({
+  // String? shopId,
+  String? shopname,
+  String? companyname,
+  String? companycontact,
+  String? companyemail,
+  String? address,
+  String? owneremail,
+  String? imageUrl,
+}) async {
+  final docShop = FirebaseFirestore.instance
+      .collection('shops')
+      .where('email', isEqualTo: owneremail);
+
+  final dataToUpdate = <String, dynamic>{};
+
+  if (shopname != null && shopname.isNotEmpty) {
+    dataToUpdate['shopname'] = shopname;
+  }
+  if (companyname != null && companyname.isNotEmpty) {
+    dataToUpdate['companyname'] = companyname;
+  }
+  if (companycontact != null && companycontact.isNotEmpty) {
+    dataToUpdate['companycontact'] = companycontact;
+  }
+  if (companyemail != null && companyemail.isNotEmpty) {
+    dataToUpdate['companyemail'] = companyemail;
+  }
+  if (address != null && address.isNotEmpty) dataToUpdate['address'] = address;
+  // if (dataToUpdate.isEmpty) return;
+
+  await docShop.get().then((querySnapshot) async {
+    final documentSnapshot = querySnapshot.docs.first;
+    await documentSnapshot.reference.update(dataToUpdate);
+  });
+}
+
+//attach strings imageUrl to shop ID
+Future<void> updateShopImageUrl(String shopId, String imageUrl) async {
+  final docShop = FirebaseFirestore.instance.collection('shops').doc(shopId);
+
+  final dataToUpdate = <String, dynamic>{};
+
+  if (imageUrl != null && imageUrl.isNotEmpty) {
+    dataToUpdate['imageUrl'] = imageUrl;
+  }
+  if (dataToUpdate.isEmpty) return;
+
+  await docShop.update(dataToUpdate);
+}
+
+//delete shop
+Future<void> deleteShop(String email) async {
+  final docShop = FirebaseFirestore.instance
+      .collection('shops')
+      .where('email', isEqualTo: email);
+
+  await docShop.get().then((querySnapshot) async {
+    final documentSnapshot = querySnapshot.docs.first;
+    await documentSnapshot.reference.delete();
+  });
 }

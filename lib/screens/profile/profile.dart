@@ -4,6 +4,7 @@ import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/authservice.dart';
 import 'package:drivedoctor/bloc/services/shopservice.dart';
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:drivedoctor/screens/login/login.dart';
 import 'package:drivedoctor/screens/profile/update_profile.dart';
 import 'package:drivedoctor/widgets/profile.dart';
@@ -20,6 +21,9 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final Storage storage = Storage();
+  String imageName = 'profile.jpg';
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -58,12 +62,30 @@ class _ProfileState extends State<Profile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              const SizedBox(
-                width: 120,
-                height: 120,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/background.jpeg'),
-                ),
+              FutureBuilder<String>(
+                future: storage.fetchProfilePicture(imageName),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // While waiting for the future to resolve
+                    return const CircularProgressIndicator();
+                  } else {
+                    if (snapshot.hasError) {
+                      // Error occurred while fetching the download URL
+                      print(snapshot.error);
+                    }
+
+                    String downloadUrl = snapshot.data?.toString() ?? '';
+                    final imageProvider = downloadUrl.isNotEmpty
+                        ? NetworkImage(downloadUrl) as ImageProvider
+                        : const AssetImage('assets/user.png');
+
+                    return CircleAvatar(
+                      radius: 70,
+                      backgroundImage: imageProvider,
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 10),
               FutureBuilder<UserData>(
@@ -176,14 +198,40 @@ class _ProfileState extends State<Profile> {
                             } else if (snapshot.hasData &&
                                 snapshot.data != null) {
                               // shop exists
-                              return ProfileWidget(
-                                title: 'Shop Dashboard',
-                                icon: LineAwesomeIcons.store,
-                                onPress: () {
-                                  Navigator.pushReplacementNamed(
-                                      context, shopDashboard);
-                                },
-                                textColor: textColor,
+                              return Column(
+                                children: [
+                                  ProfileWidget(
+                                    title: 'Shop Dashboard',
+                                    icon: LineAwesomeIcons.store,
+                                    onPress: () {
+                                      Navigator.pushReplacementNamed(
+                                          context, shopDashboard);
+                                    },
+                                    textColor: textColor,
+                                  ),
+                                  ProfileWidget(
+                                    title: 'Delete shop',
+                                    icon: LineAwesomeIcons.trash,
+                                    onPress: () async {
+                                      //delete shop
+                                      await deleteShop(Auth.email);
+
+                                      //show successfully delete message
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Shop deleted successfully'),
+                                          backgroundColor: Colors.white,
+                                        ),
+                                      );
+
+                                      Navigator.pushReplacementNamed(
+                                          context, profile);
+                                    },
+                                    textColor: textColor,
+                                  ),
+                                ],
                               );
                             } else {
                               // shop doesn't exist

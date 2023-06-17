@@ -24,7 +24,7 @@ class _ManageusercontentState extends State<Manageusercontent> {
     return Theme(
       data: ThemeData.dark(), // Set the desired dark blue background color
       child: Scaffold(
-        drawer: const SideMenu(), // Add the SideMenu widget as the drawer
+        drawer: const AdminSideMenu(), // Add the SideMenu widget as the drawer
         body: SafeArea(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
