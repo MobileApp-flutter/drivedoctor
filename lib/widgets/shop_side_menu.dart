@@ -78,7 +78,9 @@ class ShopSideMenu extends StatelessWidget {
               const Text("Manage order", style: TextStyle(color: Colors.black)),
           leading:
               const Icon(Icons.local_shipping_outlined, color: Colors.black),
-          onTap: () {},
+          onTap: () {
+            Navigator.pushReplacementNamed(context, manageOrder);
+          },
         ),
       ],
     ));

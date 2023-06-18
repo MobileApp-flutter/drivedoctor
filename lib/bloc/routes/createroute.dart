@@ -6,6 +6,7 @@ import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 import 'package:drivedoctor/screens/dashboard/shopdashboard.dart';
 import 'package:drivedoctor/screens/login/login.dart';
+import 'package:drivedoctor/screens/management/manageorder.dart';
 import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:drivedoctor/screens/profile/shop_profile.dart';
 import 'package:drivedoctor/screens/register/registrationpage.dart';
@@ -52,6 +53,8 @@ Route<dynamic>? createRoute(settings) {
       return MaterialPageRoute(builder: (context) => const Admindashboard());
     case manageUser:
       return MaterialPageRoute(builder: (context) => const Manageusercontent());
+    case manageOrder:
+      return MaterialPageRoute(builder: (context) => const Manageorder());
   }
   return null;
 }

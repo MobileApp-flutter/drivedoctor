@@ -9,5 +9,6 @@ const String shopProfile = '/shoprofile';
 const String addService = '/addService';
 const String adminDashboard = '/admindash';
 const String manageUser = '/manageuser';
+const String manageOrder = '/manageorder';
 const String shopDetail = '/shopdetail';
 const String serviceDetail = '/servicedetail';
