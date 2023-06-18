@@ -6,7 +6,7 @@ class ServiceController {
       FirebaseFirestore.instance.collection('services');
 
   //get all services
-  Future<List<ServiceData>> getServices() async {
+  Future<List<ServiceData>> getServices(String shopId) async {
     try {
       final QuerySnapshot snapshot = await serviceCollection.get();
 

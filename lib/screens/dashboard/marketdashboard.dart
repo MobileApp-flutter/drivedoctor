@@ -110,7 +110,7 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
                         },
                       ),
                       onTap: () {
-                        _navigateToProductDetails(context, product.productId);
+                        _showProductDetailsDialog(context, product);
                       },
                     ),
                   );
@@ -141,11 +141,97 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
     setState(() {}); // Update the UI after adding the item to the cart
   }
 
-  void _navigateToProductDetails(BuildContext context, String productId) {
-    // Navigate to the product details page
-    /*Navigator.of(context).pushNamed(
-      AppRoutes.productDetails,
-      arguments: productId,
-    );*/
+  void _showProductDetailsDialog(BuildContext context, ProductData product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  child: Image.network(
+                    product.imageUrl,
+                    fit: BoxFit.cover,
+                    height: 200,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.productName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Price: \$${product.price.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Description:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        product.description,
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Rating: ${product.rating}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Stock: ${product.stock}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Total Sold: ${product.totalSold}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Close'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

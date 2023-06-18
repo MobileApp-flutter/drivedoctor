@@ -12,3 +12,4 @@ const String manageUser = '/manageuser';
 const String manageOrder = '/manageorder';
 const String shopDetail = '/shopdetail';
 const String serviceDetail = '/servicedetail';
+const String serviceEdit = '/serviceedit';

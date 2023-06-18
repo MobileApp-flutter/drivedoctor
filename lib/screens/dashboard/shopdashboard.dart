@@ -293,78 +293,101 @@ class _ShopdashboardState extends State<Shopdashboard> {
                             final service = services[index];
 
                             return SizedBox(
-                              width:
-                                  200.0, // Adjust the width of each card as needed
+                              width: 200.0,
                               child: Card(
                                 color: Colors.blue[50],
                                 margin: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Stack(
                                   children: [
-                                    FutureBuilder<List<String>>(
-                                      future: storage
-                                          .fetchImages(service.serviceId),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<List<String>>
-                                              snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const CircularProgressIndicator();
-                                        } else if (snapshot.hasError ||
-                                            !snapshot.hasData ||
-                                            snapshot.data!.isEmpty) {
-                                          return Image.asset(
-                                            'assets/shop_image.jpg',
-                                            height: 100.0,
-                                            width: 150.0,
-                                            fit: BoxFit.cover,
-                                          );
-                                        } else {
-                                          return CarouselSlider(
-                                            options: CarouselOptions(
-                                              height: 100.0,
-                                              aspectRatio: 16 / 9,
-                                              enlargeCenterPage: true,
-                                              enableInfiniteScroll: false,
-                                            ),
-                                            items: snapshot.data!.map((image) {
-                                              return Image.network(
-                                                image,
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        FutureBuilder<List<String>>(
+                                          future: storage
+                                              .fetchImages(service.serviceId),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<List<String>>
+                                                  snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            } else if (snapshot.hasError ||
+                                                !snapshot.hasData ||
+                                                snapshot.data!.isEmpty) {
+                                              return Image.asset(
+                                                'assets/shop_image.jpg',
+                                                height: 100.0,
+                                                width: 150.0,
                                                 fit: BoxFit.cover,
                                               );
-                                            }).toList(),
-                                          );
-                                        }
-                                      },
+                                            } else {
+                                              return CarouselSlider(
+                                                options: CarouselOptions(
+                                                  height: 100.0,
+                                                  aspectRatio: 16 / 9,
+                                                  enlargeCenterPage: true,
+                                                  enableInfiniteScroll: false,
+                                                ),
+                                                items:
+                                                    snapshot.data!.map((image) {
+                                                  return Image.network(
+                                                    image,
+                                                    fit: BoxFit.cover,
+                                                  );
+                                                }).toList(),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                service.servicename,
+                                                style: const TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Price: RM ${service.serviceprice}',
+                                                style: const TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Waiting Time: ${service.waittime}',
+                                                style: const TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            service.servicename,
-                                            style: const TextStyle(
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Price: RM ${service.serviceprice}',
-                                            style: const TextStyle(
-                                              fontSize: 14.0,
-                                              fontWeight: FontWeight.normal,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Waiting Time: ${service.waittime}',
-                                            style: const TextStyle(
-                                              fontSize: 14.0,
-                                              fontWeight: FontWeight.normal,
-                                            ),
-                                          ),
-                                        ],
+                                    Positioned(
+                                      top: 8.0,
+                                      right: 8.0,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            serviceEdit,
+                                            arguments: service.serviceId,
+                                          );
+                                        },
+                                        child: const Icon(
+                                          Icons.edit,
+                                          color: Colors.grey,
+                                          size: 16.0,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -434,17 +457,17 @@ class _ShopdashboardState extends State<Shopdashboard> {
                   ),
                 ),
                 // Show latest feedback and rating
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.feedback,
                         color: Colors.blue,
                         size: 24,
                       ),
-                      const SizedBox(width: 10),
-                      const Text(
+                      SizedBox(width: 10),
+                      Text(
                         'Latest Feedback and Rating',
                         style: TextStyle(
                           fontSize: 20,
