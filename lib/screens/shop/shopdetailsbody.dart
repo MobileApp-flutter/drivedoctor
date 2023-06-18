@@ -35,18 +35,18 @@ class _ShopdetailsbodyState extends State<Shopdetailsbody> {
   late Size size;
 
   @override
-    void initState() {
-      super.initState();
+  void initState() {
+    super.initState();
 
-      shop = widget.shop;
-      updateFeedbacksAndRating();
+    shop = widget.shop;
+    updateFeedbacksAndRating();
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          size = MediaQuery.of(context).size;
-        });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        size = MediaQuery.of(context).size;
       });
-    }
+    });
+  }
 
   List<ServiceData> services = [];
 
@@ -333,7 +333,6 @@ class _ShopdetailsbodyState extends State<Shopdetailsbody> {
                                                         ],
                                                       ),
                                                     ),
-                                                    
                                                   ],
                                                 ),
                                               ),
@@ -345,12 +344,11 @@ class _ShopdetailsbodyState extends State<Shopdetailsbody> {
                                   },
                                 ),
                               ),
-                              const SizedBox(height:10),
+                              const SizedBox(height: 10),
                               // Show latest feedback and rating
-                              const SizedBox(
+                              SizedBox(
                                 child: Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 20),
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
                                   child: Row(
                                     children: [
                                       Icon(
@@ -472,7 +470,6 @@ class _ShopdetailsbodyState extends State<Shopdetailsbody> {
                             ],
                           ),
                         ),
-                        
                       ],
                     ),
                   ),
@@ -483,13 +480,13 @@ class _ShopdetailsbodyState extends State<Shopdetailsbody> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              navigateToFeedbackPage(userId, shop.shopId);
-            },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.blue,
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        onPressed: () {
+          navigateToFeedbackPage(userId, shop.shopId);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
