@@ -457,7 +457,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
                   ),
                 ),
                 // Show latest feedback and rating
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
