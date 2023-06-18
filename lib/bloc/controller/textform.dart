@@ -13,4 +13,10 @@ class TextFormController {
   final companycontactController = TextEditingController();
   final companyemailController = TextEditingController();
   final addressController = TextEditingController();
+
+  //shop service controller
+  final serviceNameController = TextEditingController();
+  final servicePriceController = TextEditingController();
+  final waitTimeController = TextEditingController();
+  final serviceDescController = TextEditingController();
 }

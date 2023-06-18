@@ -57,3 +57,35 @@ Future<ShopData?> hasShopRegistered(String email) async {
 
   return shop;
 }
+
+//update user
+Future<void> updateService({
+  String? serviceId,
+  String? servicename,
+  String? serviceprice,
+  String? waittime,
+  String? servicedesc,
+}) async {
+  final collection = FirebaseFirestore.instance.collection('services');
+  final documentRef = collection.doc(serviceId);
+
+  final dataToUpdate = <String, dynamic>{};
+
+  if (servicename != null && servicename.isNotEmpty) {
+    dataToUpdate['servicename'] = servicename;
+  }
+
+  if (serviceprice != null && serviceprice.isNotEmpty) {
+    dataToUpdate['serviceprice'] = serviceprice;
+  }
+
+  if (waittime != null && waittime.isNotEmpty) {
+    dataToUpdate['waittime'] = waittime;
+  }
+
+  if (servicedesc != null && servicedesc.isNotEmpty) {
+    dataToUpdate['servicedesc'] = servicedesc;
+  }
+
+  await documentRef.update(dataToUpdate);
+}
