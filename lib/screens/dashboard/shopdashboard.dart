@@ -457,17 +457,17 @@ class _ShopdashboardState extends State<Shopdashboard> {
                   ),
                 ),
                 // Show latest feedback and rating
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.feedback,
                         color: Colors.blue,
                         size: 24,
                       ),
-                      const SizedBox(width: 10),
-                      const Text(
+                      SizedBox(width: 10),
+                      Text(
                         'Latest Feedback and Rating',
                         style: TextStyle(
                           fontSize: 20,
