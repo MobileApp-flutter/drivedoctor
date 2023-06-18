@@ -54,6 +54,19 @@ class _ServiceeditState extends State<Serviceedit> {
     }
   }
 
+  void _deleteService() async {
+    try {
+      await deleteService(serviceId: widget.serviceId);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Service Deleted!')));
+      Navigator.pop(context); // Return to the previous screen after deletion
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error deleting service')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,6 +151,23 @@ class _ServiceeditState extends State<Serviceedit> {
                     ),
                     child: const Text(
                       'Update Service',
+                      style: defaultText,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 150,
+                  child: ElevatedButton(
+                    onPressed: _deleteService, // Add the delete function here
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Colors.red, // Use a red color for the delete button
+                      side: BorderSide.none,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text(
+                      'Delete Service',
                       style: defaultText,
                     ),
                   ),

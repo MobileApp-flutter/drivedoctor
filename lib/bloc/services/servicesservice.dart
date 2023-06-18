@@ -89,3 +89,15 @@ Future<void> updateService({
 
   await documentRef.update(dataToUpdate);
 }
+
+Future<void> deleteService({
+  String? serviceId,
+  String? servicename,
+  String? serviceprice,
+  String? waittime,
+  String? servicedesc,
+}) async {
+  final serviceDocRef =
+      FirebaseFirestore.instance.collection('services').doc(serviceId);
+  await serviceDocRef.delete();
+}
