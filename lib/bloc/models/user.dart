@@ -5,13 +5,15 @@ class UserData {
   late final String username;
   late final String fullname;
   late final int contact;
+  String status;
 
   UserData({
     this.id,
     required this.username,
     required this.fullname,
     required this.contact,
-  });
+    String? status,
+  }): status = status ?? "regular";
 
   factory UserData.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
@@ -21,6 +23,7 @@ class UserData {
       contact: data['contact'],
       fullname: data['fullname'],
       username: data['username'],
+      status: data['status'] ?? "regular",
     );
   }
 }
