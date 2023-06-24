@@ -12,9 +12,9 @@ class SubscriptionManagementPage extends StatefulWidget {
 
 class _SubscriptionManagementPageState
     extends State<SubscriptionManagementPage> {
-  List<UserData> users = []; // Placeholder for user data
-  List<UserData> filteredUsers = []; // Placeholder for filtered users
-  String filterStatus = 'all'; // Variable to store the selected filter status
+  List<UserData> users = [];
+  List<UserData> filteredUsers = [];
+  String filterStatus = 'all';
 
   @override
   void initState() {
@@ -36,7 +36,6 @@ class _SubscriptionManagementPageState
     setState(() {
       filterStatus = status;
       if (status == 'all') {
-        // If 'all' filter is selected, display all users
         filteredUsers = users;
       } else {
         // Filter the users based on the selected status
