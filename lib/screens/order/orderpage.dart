@@ -74,7 +74,8 @@ class GetAllOrders extends StatelessWidget {
                 width: 80,
                 height: 80,
                 child: FutureBuilder<List<String>>(
-                  future: storage.fetchImages(order.service![index].serviceId),
+                  future: storage.fetchImages(
+                      order.service![index].serviceId, true),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

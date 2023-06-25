@@ -241,9 +241,10 @@ class _ShopdetailsbodyState extends State<Shopdetailsbody> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     FutureBuilder<List<String>>(
-                                                      future: storage
-                                                          .fetchImages(service
-                                                              .serviceId),
+                                                      future:
+                                                          storage.fetchImages(
+                                                              service.serviceId,
+                                                              true),
                                                       builder: (BuildContext
                                                               context,
                                                           AsyncSnapshot<

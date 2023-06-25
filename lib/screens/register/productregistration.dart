@@ -53,7 +53,7 @@ class _ProductsState extends State<Products> {
 
       try {
         //upload the images to Firebase storage
-        await storage.uploadImages(selectedImages, productId);
+        await storage.uploadImages(selectedImages, productId, false);
 
         //create the service
         await createProduct(

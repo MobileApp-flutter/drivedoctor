@@ -307,8 +307,8 @@ class _ShopdashboardState extends State<Shopdashboard> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         FutureBuilder<List<String>>(
-                                          future: storage
-                                              .fetchImages(service.serviceId),
+                                          future: storage.fetchImages(
+                                              service.serviceId, true),
                                           builder: (BuildContext context,
                                               AsyncSnapshot<List<String>>
                                                   snapshot) {
@@ -466,8 +466,8 @@ class _ShopdashboardState extends State<Shopdashboard> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         FutureBuilder<List<String>>(
-                                          future: storage
-                                              .fetchImages(product.productId),
+                                          future: storage.fetchImages(
+                                              product.productId, false),
                                           builder: (BuildContext context,
                                               AsyncSnapshot<List<String>>
                                                   snapshot) {
@@ -523,7 +523,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
                                                 ),
                                               ),
                                               Text(
-                                                'Waiting Time: ${product.stock}',
+                                                'Stock: ${product.stock}',
                                                 style: const TextStyle(
                                                   fontSize: 14.0,
                                                   fontWeight: FontWeight.normal,

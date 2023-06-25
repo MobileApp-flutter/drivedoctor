@@ -54,7 +54,7 @@ class _ServicesState extends State<Services> {
 
       try {
         //upload the images to Firebase storage
-        await storage.uploadImages(selectedImages, serviceId);
+        await storage.uploadImages(selectedImages, serviceId, true);
 
         //create the service
         await createService(

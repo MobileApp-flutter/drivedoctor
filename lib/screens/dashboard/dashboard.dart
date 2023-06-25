@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
@@ -281,8 +282,7 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(
               height: 200.0,
               child: FutureBuilder<List<ProductData>>(
-                future:
-                    productController.getProducts(), // Retrieve products data
+                future: productController.getProducts(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -302,16 +302,50 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                  height: 120.0,
-                                  width: 200.0,
-                                  child: product.imageUrl != null
-                                      ? Image.network(
-                                          product.imageUrl!,
+                                  FutureBuilder<List<String>>(
+                                    future: storage.fetchImages(
+                                        product.productId, false),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<String>> snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError ||
+                                          !snapshot.hasData ||
+                                          snapshot.data!.isEmpty) {
+                                        return Image.asset(
+                                          'assets/shop_image.jpg',
+                                          height: 100.0,
+                                          width: 150.0,
                                           fit: BoxFit.cover,
-                                        )
-                                      : Placeholder(), // Placeholder or alternative widget to show when imageUrl is null
-                                ),
+                                        );
+                                      } else {
+                                        return SizedBox(
+                                          height: 100.0,
+                                          width: 150.0,
+                                          child: LayoutBuilder(
+                                            builder: (context, constraints) {
+                                              return CarouselSlider(
+                                                options: CarouselOptions(
+                                                  height: constraints.maxHeight,
+                                                  aspectRatio: 16 / 9,
+                                                  enlargeCenterPage: true,
+                                                  enableInfiniteScroll: false,
+                                                ),
+                                                items:
+                                                    snapshot.data!.map((image) {
+                                                  return Image.network(
+                                                    image,
+                                                    fit: BoxFit.cover,
+                                                  );
+                                                }).toList(),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
@@ -364,6 +398,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 },
               ),
             ),
+
             const SizedBox(height: 16.0),
             Align(
               alignment: Alignment.center,

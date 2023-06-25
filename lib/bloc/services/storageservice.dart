@@ -41,13 +41,15 @@ class Storage {
 
   //upload multiple images (services and products)
   Future<void> uploadImages(
-    List<File> selectedImages,
-    String serviceId, //serviceid
-  ) async {
+      List<File> selectedImages,
+      String id, //service or product id
+      bool isService) async {
     try {
+      String folderName = isService ? 'services' : 'products';
+
       for (int i = 0; i < selectedImages.length; i++) {
         await storage
-            .ref('shops/services/$serviceId/image_$i.jpg')
+            .ref('shops/$folderName/$id/image_$i.jpg')
             .putFile(selectedImages[i]);
       }
     } on firebase_core.FirebaseException catch (e) {
@@ -58,9 +60,11 @@ class Storage {
   }
 
   //fetch multiple images (services and products)
-  Future<List<String>> fetchImages(String serviceId) async {
+  Future<List<String>> fetchImages(String id, bool isService) async {
+    String folderName = isService ? 'services' : 'products';
+
     List<String> downloadURL = await storage
-        .ref('shops/services/$serviceId')
+        .ref('shops/$folderName/$id')
         .listAll()
         .then((value) => value.items)
         .then((value) => value.map((e) => e.getDownloadURL()))
@@ -68,6 +72,32 @@ class Storage {
         .then((value) => value.map((e) => e.toString()).toList());
 
     return downloadURL;
+  }
+
+  //delete images on give index array (services and products)
+  Future<void> deleteImage(String id, bool isService, int index) async {
+    // Fetch the list of images
+    List<String> imageUrls = await fetchImages(id, isService);
+
+    if (index >= 0 && index < imageUrls.length) {
+      String imageUrl = imageUrls[index];
+
+      // Delete the image from storage
+      await storage.refFromURL(imageUrl).delete();
+    }
+  }
+
+  //delete all images
+  Future<void> deleteAllImages(String id, bool isService) async {
+    // Fetch the list of images
+    List<String> imageUrls = await fetchImages(id, isService);
+
+    for (int i = 0; i < imageUrls.length; i++) {
+      String imageUrl = imageUrls[i];
+
+      // Delete the image from storage
+      await storage.refFromURL(imageUrl).delete();
+    }
   }
 
   //upload shop picture
@@ -120,43 +150,4 @@ class Storage {
 
     return downloadURL;
   }
-
-  //fetch shop image based on matching shopId on storage path and document
-  //NOTE: I CAN'T WORK ON THE LOGIC. SO I WON'T USE THIS METHOD FIRST
-  Future<String> fetchShopImage(String imageName) async {
-    // Get array of shopIds from Cloud Firestore
-    final QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('shops').get();
-
-    // Get shopId from array of shopIds
-    String shopId = snapshot.docs.map((doc) => doc['shopId']).single;
-
-    // Map if the shopId matches any shopId in Firebase Storage path
-    String matchingShopId = snapshot.docs
-        .map((doc) => doc['shopId'])
-        .firstWhere((shopId) => shopId == shopId, orElse: () => null);
-
-    if (matchingShopId == null) {
-      // ShopId not found, handle the error or return a default image URL
-      return 'DEFAULT_IMAGE_URL';
-    }
-
-    // Get shop image from the storage path
-    String downloadURL = await storage
-        .ref('shops/$matchingShopId/$imageName')
-        .getDownloadURL()
-        .then((value) => value.toString());
-
-    return downloadURL;
-  }
-
-  // Future<firebase_storage.ListResult> listFiles() async {
-  //   firebase_storage.ListResult results = await storage.ref('test').listAll();
-
-  //   results.items.forEach((firebase_storage.Reference ref) {
-  //     print('Found files: $ref');
-  //   });
-
-  //   return results;
-  // }
 }
