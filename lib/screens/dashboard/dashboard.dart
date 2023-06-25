@@ -299,11 +299,15 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Image.network(
-                                  product.imageUrl,
+                                Container(
                                   height: 120.0,
                                   width: 200.0,
-                                  fit: BoxFit.cover,
+                                  child: product.imageUrl != null
+                                      ? Image.network(
+                                          product.imageUrl!,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Placeholder(), // Placeholder or alternative widget to show when imageUrl is null
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),

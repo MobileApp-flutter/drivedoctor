@@ -12,8 +12,10 @@ import 'package:drivedoctor/screens/profile/shop_profile.dart';
 import 'package:drivedoctor/screens/register/registrationpage.dart';
 import 'package:drivedoctor/screens/register/shopregisterpage.dart';
 import 'package:drivedoctor/screens/register/servicesregistration.dart';
+import 'package:drivedoctor/screens/register/productregistration.dart';
 import 'package:drivedoctor/screens/shop/shopdetails.dart';
 import 'package:drivedoctor/screens/shop/edit_service.dart';
+import 'package:drivedoctor/screens/shop/edit_product.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic>? createRoute(settings) {
@@ -60,6 +62,12 @@ Route<dynamic>? createRoute(settings) {
       final serviceId = settings.arguments as String;
       return MaterialPageRoute(
           builder: (context) => Serviceedit(serviceId: serviceId));
+    case addProduct:
+      return MaterialPageRoute(builder: (context) => Products());
+    case productEdit:
+      final productId = settings.arguments as String;
+      return MaterialPageRoute(
+          builder: (context) => Productedit(productId: productId));
   }
   return null;
 }

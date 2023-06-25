@@ -71,10 +71,15 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
                       leading: Container(
                         width: 80,
                         height: 80,
-                        child: Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                        child: product.imageUrl != null
+                            ? Image.network(
+                                product.imageUrl!,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                'https://example.com/placeholder.jpg',
+                                fit: BoxFit.cover,
+                              ),
                       ),
                       title: Text(
                         product.productName,
@@ -161,7 +166,7 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   child: Image.network(
-                    product.imageUrl,
+                    product.imageUrl ?? 'https://example.com/placeholder.jpg',
                     fit: BoxFit.cover,
                     height: 200,
                   ),

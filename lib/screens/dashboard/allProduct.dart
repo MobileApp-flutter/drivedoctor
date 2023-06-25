@@ -43,7 +43,8 @@ class ProductListPage extends StatelessWidget {
                         width: 80,
                         height: 80,
                         child: Image.network(
-                          product.imageUrl,
+                          product.imageUrl ??
+                              'https://example.com/placeholder.jpg',
                           fit: BoxFit.cover,
                         ),
                       ),

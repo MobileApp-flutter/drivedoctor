@@ -6,7 +6,7 @@ class ProductData {
   final String productName;
   final String description;
   final double price;
-  final String imageUrl;
+  String? imageUrl;
   final String shopId; // Reference to the shop's document ID
   double rating;
   int stock;
@@ -16,9 +16,9 @@ class ProductData {
   ProductData({
     required this.productId,
     required this.productName,
-    this.description = "-",
+    required this.description,
     required this.price,
-    required this.imageUrl,
+    this.imageUrl,
     required this.shopId,
     this.rating = 5,
     this.stock = 0,
