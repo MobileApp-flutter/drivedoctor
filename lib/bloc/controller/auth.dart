@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivedoctor/bloc/models/order.dart';
 import 'package:drivedoctor/bloc/models/services.dart';
 import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
@@ -24,6 +25,18 @@ class Auth {
     final userDoc = await FirebaseFirestore.instance
         .collection("users")
         .where("email", isEqualTo: email)
+        .get();
+    final userData =
+        userDoc.docs.map((doc) => UserData.fromSnapshot(doc)).single;
+
+    return userData;
+  }
+
+  //get user data by user id
+  static Future<UserData> getUserDataByUserId(String userId) async {
+    final userDoc = await FirebaseFirestore.instance
+        .collection("users")
+        .where("userId", isEqualTo: userId)
         .get();
     final userData =
         userDoc.docs.map((doc) => UserData.fromSnapshot(doc)).single;

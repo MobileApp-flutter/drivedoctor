@@ -145,7 +145,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             builder: (context) => CarServiceShopListPage()),
                       );
                     },
-                    child: const Text('View All'),
+                    child: const Text('View All Shops'),
                   ),
                 ],
               ),
@@ -270,7 +270,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             builder: (context) => ProductListPage()),
                       );
                     },
-                    child: const Text('View All'),
+                    child: const Text('View All Product'),
                   ),
                 ],
               ),

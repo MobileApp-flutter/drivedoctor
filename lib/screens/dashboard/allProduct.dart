@@ -18,7 +18,7 @@ class ProductListPage extends StatelessWidget {
               Navigator.pushReplacementNamed(context, dashboard);
             },
             icon: const Icon(LineAwesomeIcons.angle_left)),
-        title: const Text('Shop List'),
+        title: const Text('Product List'),
         backgroundColor: Colors.blue.shade800,
       ),
       body: FutureBuilder<List<ProductData>>(

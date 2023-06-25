@@ -29,6 +29,7 @@ class _ServicedetailsbodyState extends State<Servicedetailsbody> {
       orderType: 'service',
       orderStatus: 'pending',
       userId: currentUser?.uid,
+      shopId: widget.service.shopId,
       service: [widget.service],
     );
 

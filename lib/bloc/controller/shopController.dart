@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/shop.dart';
 
 class ShopController {
@@ -11,7 +12,9 @@ class ShopController {
 
       return snapshot.docs.map((doc) => ShopData.fromSnapshot(doc)).toList();
     } catch (error) {
-      print('Error fetching shops: $error');
+      if (kDebugMode) {
+        print('Error fetching shops: $error');
+      }
       return [];
     }
   }
@@ -23,11 +26,15 @@ class ShopController {
       if (snapshot.exists) {
         return ShopData.fromSnapshot(snapshot);
       } else {
-        print('Shop not found');
+        if (kDebugMode) {
+          print('Shop not found');
+        }
         return null;
       }
     } catch (error) {
-      print('Error fetching shop: $error');
+      if (kDebugMode) {
+        print('Error fetching shop: $error');
+      }
       return null;
     }
   }

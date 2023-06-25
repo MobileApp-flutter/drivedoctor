@@ -30,6 +30,7 @@ class SearchResultsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Search Results - $searchOption'),
+        backgroundColor: Colors.blue.shade800,
       ),
       body: ListView.builder(
         itemCount: results.length,

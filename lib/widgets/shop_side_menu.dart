@@ -10,33 +10,6 @@ class ShopSideMenu extends StatelessWidget {
         child: ListView(
       padding: EdgeInsets.zero,
       children: [
-        // UserAccountsDrawerHeader(
-        //   // accountName: const Text(
-        //   //   'Shop',
-        //   //   style: TextStyle(color: Colors.black),
-        //   // ),
-        //   // accountEmail: Text(
-        //   //   Auth.email,
-        //   //   style: const TextStyle(color: Colors.black),
-        //   // ),
-        //   // currentAccountPicture: CircleAvatar(
-        //   //   child: ClipOval(
-        //   //     child: Image.asset(
-        //   //       'assets/logo_white.png',
-        //   //       width: 90,
-        //   //       height: 90,
-        //   //       fit: BoxFit.cover,
-        //   //     ),
-        //   //   ),
-        //   // ),
-        //   decoration: const BoxDecoration(
-        //     color: Colors.blue,
-        //     image: DecorationImage(
-        //       image: AssetImage('assets/background.jpeg'),
-        //       fit: BoxFit.cover,
-        //     ),
-        //   ),
-        // ),
         ListTile(
           title: const Text("Dashboard", style: TextStyle(color: Colors.black)),
           leading: const Icon(Icons.dashboard, color: Colors.black),

@@ -15,6 +15,9 @@ class OrderData {
   //list of service
   final List<ServiceData>? service;
 
+  //userid
+  final String userId;
+
   OrderData({
     required this.orderId,
     required this.orderType,
@@ -23,6 +26,7 @@ class OrderData {
     required this.orderDateUpdate,
     this.product,
     this.service,
+    required this.userId,
   });
 
   //factory snapshot only on service list
@@ -37,6 +41,7 @@ class OrderData {
       orderDateCreate: data['orderdatecreate'],
       orderDateUpdate: data['orderdateupdate'],
       service: service,
+      userId: data['userId'],
     );
   }
 
@@ -52,6 +57,7 @@ class OrderData {
       orderDateCreate: data['orderdatecreate'],
       orderDateUpdate: data['orderdateupdate'],
       product: product,
+      userId: data['userId'],
     );
   }
 }

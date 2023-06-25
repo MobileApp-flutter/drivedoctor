@@ -12,6 +12,8 @@ Future createUser({
   final docUser = FirebaseFirestore.instance.collection('users').doc();
 
   final json = {
+    //user UID not user doc
+    'userId': FirebaseAuth.instance.currentUser?.uid,
     'username': username,
     'fullname': fullname,
     'contact': contact,
