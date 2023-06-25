@@ -180,63 +180,65 @@ class _DashboardPageState extends State<DashboardPage> {
                             },
                             child: Card(
                               margin: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  FutureBuilder<String>(
-                                      future: storage.fetchShopProfilePicture(
-                                          shop.shopId, imageName),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<String> snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const Center(
-                                              child:
-                                                  CircularProgressIndicator());
-                                        } else if (snapshot.hasError ||
-                                            !snapshot.hasData) {
-                                          return Image.network(
-                                            shop.imageUrl,
-                                            height: 120.0,
-                                            width: 200.0,
-                                            fit: BoxFit.cover,
-                                          );
-                                        } else {
-                                          String downloadUrl =
-                                              snapshot.data?.toString() ?? '';
-                                          final imageProvider =
-                                              downloadUrl.isNotEmpty
-                                                  ? NetworkImage(downloadUrl)
-                                                      as ImageProvider
-                                                  : const AssetImage(
-                                                      'assets/shop_image.jpg');
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FutureBuilder<String>(
+                                        future: storage.fetchShopProfilePicture(
+                                            shop.shopId, imageName),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return const Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          } else if (snapshot.hasError ||
+                                              !snapshot.hasData) {
+                                            return Image.network(
+                                              shop.imageUrl,
+                                              height: 120.0,
+                                              width: 200.0,
+                                              fit: BoxFit.cover,
+                                            );
+                                          } else {
+                                            String downloadUrl =
+                                                snapshot.data?.toString() ?? '';
+                                            final imageProvider = downloadUrl
+                                                    .isNotEmpty
+                                                ? NetworkImage(downloadUrl)
+                                                    as ImageProvider
+                                                : const AssetImage(
+                                                    'assets/shop_image.jpg');
 
-                                          return Image(
-                                            image: imageProvider,
-                                            height: 120.0,
-                                            width: 200.0,
-                                            fit: BoxFit.cover,
-                                          );
-                                        }
-                                      }),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          shop.shopname,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                            return Image(
+                                              image: imageProvider,
+                                              height: 120.0,
+                                              width: 200.0,
+                                              fit: BoxFit.cover,
+                                            );
+                                          }
+                                        }),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            shop.shopname,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                        Text('Rating: ${shop.rating}'),
-                                        Text(shop.companyname),
-                                      ],
+                                          Text('Rating: ${shop.rating}'),
+                                          Text(shop.companyname),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -296,10 +298,11 @@ class _DashboardPageState extends State<DashboardPage> {
                           final product = products[index];
                           return Card(
                             margin: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
                                   height: 120.0,
                                   width: 200.0,
                                   child: product.imageUrl != null
@@ -309,46 +312,47 @@ class _DashboardPageState extends State<DashboardPage> {
                                         )
                                       : Placeholder(), // Placeholder or alternative widget to show when imageUrl is null
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        product.productName,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          product.productName,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        'Price: RM${product.price.toStringAsFixed(2)}',
-                                      ),
-                                      FutureBuilder<ShopData?>(
-                                        future: shopController
-                                            .getShopById(product.shopId),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const CircularProgressIndicator();
-                                          } else if (snapshot.hasError) {
-                                            return const Text(
-                                                'Error fetching shop');
-                                          } else {
-                                            final shop = snapshot.data;
-                                            if (shop != null) {
-                                              return Text(shop.shopname);
-                                            } else {
+                                        Text(
+                                          'Price: RM${product.price.toStringAsFixed(2)}',
+                                        ),
+                                        FutureBuilder<ShopData?>(
+                                          future: shopController
+                                              .getShopById(product.shopId),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            } else if (snapshot.hasError) {
                                               return const Text(
-                                                  'Shop not found');
+                                                  'Error fetching shop');
+                                            } else {
+                                              final shop = snapshot.data;
+                                              if (shop != null) {
+                                                return Text(shop.shopname);
+                                              } else {
+                                                return const Text(
+                                                    'Shop not found');
+                                              }
                                             }
-                                          }
-                                        },
-                                      ),
-                                    ],
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },

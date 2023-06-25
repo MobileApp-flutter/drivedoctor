@@ -79,10 +79,9 @@ class CarServiceShopListPage extends StatelessWidget {
                             ),
                             onTap: () {
                               // Handle the tap on a specific car service shop
-                              _navigateToCarServiceShopDetails(
-                                context,
-                                carService.shopId,
-                              );
+                              Navigator.pushReplacementNamed(
+                                  context, shopDetail,
+                                  arguments: carService.shopId);
                             },
                           ),
                         ),

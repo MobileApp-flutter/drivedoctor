@@ -1,3 +1,4 @@
+import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:flutter/material.dart';
 import '../../bloc/models/shop.dart';
 import '../../bloc/models/product.dart';
@@ -86,7 +87,8 @@ class SearchResultsPage extends StatelessWidget {
           ],
         ),
         onTap: () {
-          _navigateToShopDetails(context, shop.shopId);
+          Navigator.pushReplacementNamed(context, shopDetail,
+              arguments: shop.shopId);
         },
       ),
     );

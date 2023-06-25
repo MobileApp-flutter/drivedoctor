@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/servicesservice.dart';
 import 'package:drivedoctor/bloc/services/storageservice.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 // ignore: must_be_immutable
 class Services extends StatefulWidget {
@@ -108,9 +109,31 @@ class _ServicesState extends State<Services> {
                     ElevatedButton(
                       onPressed: () async {
                         // Select multiple images
-                        await storage.selectImages(selectedImages);
+                        PermissionStatus status =
+                            await Permission.manageExternalStorage.request();
+                        if (status.isGranted) {
+                          // Select multiple images
+                          await storage.selectImages(selectedImages);
 
-                        setState(() {});
+                          setState(() {});
+                        } else {
+                          // Request permission to access external storage
+                          if (await Permission.storage.request().isGranted) {
+                            // Permission granted, select multiple images
+                            await storage.selectImages(selectedImages);
+
+                            setState(() {});
+                          } else {
+                            // Permission denied, show a message or handle the error
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Permission denied to access external storage.'),
+                              ),
+                            );
+                          }
+                        }
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
