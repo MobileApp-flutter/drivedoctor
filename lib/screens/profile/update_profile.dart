@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class UpdateProfile extends StatefulWidget {
   const UpdateProfile({Key? key}) : super(key: key);
@@ -142,53 +143,66 @@ class _UpdateProfileState extends State<UpdateProfile> {
                               ),
                               child: IconButton(
                                 onPressed: () async {
-                                  final results =
-                                      await FilePicker.platform.pickFiles(
-                                    type: FileType.image,
-                                    allowMultiple: false,
-                                  );
+                                  // Request the READ_EXTERNAL_STORAGE permission
+                                  Future<PermissionStatus> status = Permission
+                                      .manageExternalStorage
+                                      .request();
 
-                                  if (results == null) {
-                                    // ignore: use_build_context_synchronously
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('No File selected.'),
-                                      ),
+                                  // Check if permission is granted
+                                  if (await status.isGranted) {
+                                    final results =
+                                        await FilePicker.platform.pickFiles(
+                                      type: FileType.image,
+                                      allowMultiple: false,
                                     );
 
-                                    return;
-                                  }
+                                    if (results == null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('No File selected.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
 
-                                  final path = results.files.single.path;
-                                  const fileName = 'profile.jpg';
+                                    final path = results.files.single.path;
+                                    const fileName = 'profile.jpg';
 
-                                  //get current user uid
-                                  final currentUser =
-                                      FirebaseAuth.instance.currentUser?.uid;
+                                    //get current user uid
+                                    final currentUser =
+                                        FirebaseAuth.instance.currentUser?.uid;
 
-                                  // Check if the selected file is a JPG
-                                  if (path!.endsWith('.jpg')) {
-                                    await storage.uploadProfilePicture(
-                                        path, fileName);
+                                    // Check if the selected file is a JPG
+                                    if (path!.endsWith('.jpg')) {
+                                      await storage.uploadProfilePicture(
+                                          path, fileName);
+                                      String imageUrl =
+                                          await storage.getDownloadURL(
+                                              'users/$currentUser/$fileName');
 
-                                    String imageUrl =
-                                        await storage.getDownloadURL(
-                                            'users/$currentUser/$fileName');
+                                      setState(() {
+                                        profilePicture = imageUrl;
+                                      });
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Please select a JPG image.'),
+                                        ),
+                                      );
+                                    }
 
-                                    setState(() {
-                                      profilePicture = imageUrl;
-                                    });
+                                    onRefresh();
                                   } else {
-                                    // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content:
-                                            Text('Please select a JPG image.'),
+                                        content: Text(
+                                            'Permission denied to access external storage.'),
                                       ),
                                     );
                                   }
-
-                                  onRefresh();
                                 },
                                 icon: const Icon(
                                   Icons.add_a_photo_rounded,

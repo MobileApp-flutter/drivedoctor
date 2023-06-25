@@ -9,6 +9,7 @@ import 'package:drivedoctor/constants/textstyle.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ShopProfile extends StatefulWidget {
   const ShopProfile({Key? key}) : super(key: key);
@@ -134,56 +135,129 @@ class _ShopProfileState extends State<ShopProfile> {
                               ),
                               child: IconButton(
                                 onPressed: () async {
-                                  final results =
-                                      await FilePicker.platform.pickFiles(
-                                    type: FileType.image,
-                                    allowMultiple: false,
-                                  );
-
-                                  if (results == null) {
-                                    // ignore: use_build_context_synchronously
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('No File selected.'),
-                                      ),
+                                  // Check if permission to access external storage is granted
+                                  PermissionStatus status = await Permission
+                                      .manageExternalStorage
+                                      .request();
+                                  if (status.isGranted) {
+                                    final results =
+                                        await FilePicker.platform.pickFiles(
+                                      type: FileType.image,
+                                      allowMultiple: false,
                                     );
-                                    return;
-                                  }
 
-                                  final path = results.files.single.path;
+                                    if (results == null) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('No File selected.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
 
-                                  //get shopId
-                                  final shopId =
-                                      await Auth.getShopId(Auth.email);
+                                    final path = results.files.single.path;
 
-                                  const fileName = 'shop.jpg';
+                                    //get shopId
+                                    final shopId =
+                                        await Auth.getShopId(Auth.email);
 
-                                  // Check if the selected file is a JPG
-                                  if (path!.endsWith('.jpg')) {
-                                    // Upload the image to the storage
-                                    await storage.uploadShopProfilePic(
-                                        path, fileName, shopId);
+                                    const fileName = 'shop.jpg';
 
-                                    // Set the imageUrl property of the shop
-                                    String imageUrl =
-                                        await storage.getDownloadURL(
-                                            'shops/$shopId/$fileName');
+                                    // Check if the selected file is a JPG
+                                    if (path!.endsWith('.jpg')) {
+                                      // Upload the image to the storage
+                                      await storage.uploadShopProfilePic(
+                                          path, fileName, shopId);
 
-                                    //set state on shop image
-                                    setState(() {
-                                      _shopImage = imageUrl;
-                                    });
+                                      // Set the imageUrl property of the shop
+                                      String imageUrl =
+                                          await storage.getDownloadURL(
+                                              'shops/$shopId/$fileName');
 
-                                    //upload the image to the doc
-                                    // await updateShopImageUrl(shopId, imageUrl);
+                                      //set state on shop image
+                                      setState(() {
+                                        _shopImage = imageUrl;
+                                      });
+
+                                      //upload the image to the doc
+                                      // await updateShopImageUrl(shopId, imageUrl);
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Please select a JPG image.'),
+                                        ),
+                                      );
+                                    }
                                   } else {
-                                    // ignore: use_build_context_synchronously
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Please select a JPG image.'),
-                                      ),
-                                    );
+                                    // Request permission to access external storage
+                                    if (await Permission.storage
+                                        .request()
+                                        .isGranted) {
+                                      // Permission granted, continue with the image picking process
+                                      final results =
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.image,
+                                        allowMultiple: false,
+                                      );
+
+                                      if (results == null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text('No File selected.'),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      final path = results.files.single.path;
+
+                                      //get shopId
+                                      final shopId =
+                                          await Auth.getShopId(Auth.email);
+
+                                      const fileName = 'shop.jpg';
+
+                                      // Check if the selected file is a JPG
+                                      if (path!.endsWith('.jpg')) {
+                                        // Upload the image to the storage
+                                        await storage.uploadShopProfilePic(
+                                            path, fileName, shopId);
+
+                                        // Set the imageUrl property of the shop
+                                        String imageUrl =
+                                            await storage.getDownloadURL(
+                                                'shops/$shopId/$fileName');
+
+                                        //set state on shop image
+                                        setState(() {
+                                          _shopImage = imageUrl;
+                                        });
+
+                                        //upload the image to the doc
+                                        // await updateShopImageUrl(shopId, imageUrl);
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Please select a JPG image.'),
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      // Permission denied, show a message or handle the error
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Permission denied to access external storage.'),
+                                        ),
+                                      );
+                                    }
                                   }
                                 },
                                 icon: const Icon(
