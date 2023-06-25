@@ -74,7 +74,7 @@ Future<void> updateProduct({
     dataToUpdate['productName'] = productName;
   }
 
-  if (price != null) {
+  if (price != 0) {
     dataToUpdate['price'] = price;
   }
 
@@ -82,7 +82,7 @@ Future<void> updateProduct({
     dataToUpdate['description'] = description;
   }
 
-  if (stock != null) {
+  if (stock != 0) {
     dataToUpdate['stock'] = stock;
   }
 

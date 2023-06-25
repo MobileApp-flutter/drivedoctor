@@ -60,7 +60,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
 
     feedbacks = querySnapshot.docs
         .map((doc) => FeedbackData.fromSnapshot(doc))
-        .toList() as List<FeedbackData>;
+        .toList();
 
     double totalRating = 0.0;
     for (final feedback in feedbacks) {
@@ -90,6 +90,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
 
   Future<void> navigateToAllFeedbacksPage() async {
     List<FeedbackData> feedbacks = await fetchFeedbacks();
+    // ignore: use_build_context_synchronously
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -119,7 +120,6 @@ class _ShopdashboardState extends State<Shopdashboard> {
     final ProductController productController = ProductController();
     UserProvider userProvider = Provider.of<UserProvider>(context);
     String userId = userProvider.userId;
-    String userEmail = userProvider.userEmail;
 
     return SafeArea(
       child: Builder(

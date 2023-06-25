@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivedoctor/bloc/services/servicesservice.dart';
 import 'package:drivedoctor/bloc/controller/textform.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -52,6 +51,8 @@ class _ServiceeditState extends State<Serviceedit> {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Service Updated!')));
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, shopDashboard);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error updating service')),
