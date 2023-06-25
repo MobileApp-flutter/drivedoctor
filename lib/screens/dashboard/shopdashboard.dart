@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 
 import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/controller/servicecontroller.dart';
+import 'package:drivedoctor/bloc/controller/productcontroller.dart';
 import 'package:drivedoctor/bloc/models/services.dart';
+import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/storageservice.dart';
@@ -114,6 +116,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
   @override
   Widget build(BuildContext context) {
     final ServiceController serviceController = ServiceController();
+    final ProductController productController = ProductController();
     UserProvider userProvider = Provider.of<UserProvider>(context);
     String userId = userProvider.userId;
     String userEmail = userProvider.userEmail;
@@ -407,7 +410,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.pushReplacementNamed(context, addService);
+                          Navigator.pushReplacementNamed(context, addProduct);
                         },
                         child: const Icon(
                           Icons.add_circle_outlined,
@@ -417,9 +420,9 @@ class _ShopdashboardState extends State<Shopdashboard> {
                       ),
                       const SizedBox(width: 10),
                       const Text(
-                        'Your Products (still in development)',
+                        'Your Products',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -428,31 +431,134 @@ class _ShopdashboardState extends State<Shopdashboard> {
                 ),
                 SizedBox(
                   height: 200.0,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        margin: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.network(
-                              'https://soyacincau.com/wp-content/uploads/2021/08/210805-GoCar_garage-1.jpg',
-                              height: 100.0,
-                              width: 150.0,
-                              fit: BoxFit.cover,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [],
+                  child: FutureBuilder<List<ProductData>>(
+                    future: Auth.getShopId(Auth.email).then((shopId) =>
+                        productController.getProductsByShopId(shopId)),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<ProductData>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError || !snapshot.hasData) {
+                        return const SizedBox(
+                            height: 50.0,
+                            child: Text('Error fetching Products'));
+                      } else if (snapshot.data!.isEmpty) {
+                        return const SizedBox(
+                            height: 50.0, child: Text('No Products added yet'));
+                      } else {
+                        final products = snapshot.data!;
+
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: products.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final product = products[index];
+
+                            return SizedBox(
+                              width: 200.0,
+                              child: Card(
+                                color: Colors.blue[50],
+                                margin: const EdgeInsets.all(8.0),
+                                child: Stack(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        FutureBuilder<List<String>>(
+                                          future: storage
+                                              .fetchImages(product.productId),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<List<String>>
+                                                  snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            } else if (snapshot.hasError ||
+                                                !snapshot.hasData ||
+                                                snapshot.data!.isEmpty) {
+                                              return Image.asset(
+                                                'assets/shop_image.jpg',
+                                                height: 100.0,
+                                                width: 150.0,
+                                                fit: BoxFit.cover,
+                                              );
+                                            } else {
+                                              return CarouselSlider(
+                                                options: CarouselOptions(
+                                                  height: 100.0,
+                                                  aspectRatio: 16 / 9,
+                                                  enlargeCenterPage: true,
+                                                  enableInfiniteScroll: false,
+                                                ),
+                                                items:
+                                                    snapshot.data!.map((image) {
+                                                  return Image.network(
+                                                    image,
+                                                    fit: BoxFit.cover,
+                                                  );
+                                                }).toList(),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                product.productName,
+                                                style: const TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Price: RM ${product.price}',
+                                                style: const TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Waiting Time: ${product.stock}',
+                                                style: const TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Positioned(
+                                      top: 8.0,
+                                      right: 8.0,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            productEdit,
+                                            arguments: product.productId,
+                                          );
+                                        },
+                                        child: const Icon(
+                                          Icons.edit,
+                                          color: Colors.grey,
+                                          size: 16.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),

@@ -48,7 +48,8 @@ class _CartPageState extends State<CartPage> {
                   ),
                   child: ListTile(
                     leading: CachedNetworkImage(
-                      imageUrl: cartItem.product.imageUrl,
+                      imageUrl: cartItem.product.imageUrl ??
+                          'https://example.com/placeholder.jpg',
                       height: 80,
                       width: 80,
                       placeholder: (context, url) =>

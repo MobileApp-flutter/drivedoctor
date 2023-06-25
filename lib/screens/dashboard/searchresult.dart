@@ -102,9 +102,13 @@ class SearchResultsPage extends StatelessWidget {
         leading: SizedBox(
           width: 80,
           height: 80,
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          child: Container(
+            height: 120.0,
+            width: 200.0,
+            child: Image.network(
+              product.imageUrl ?? 'https://example.com/placeholder.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         title: Text(
