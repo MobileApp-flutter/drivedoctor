@@ -6,11 +6,12 @@ class ProductData {
   final String productName;
   final String description;
   final double price;
-  String? imageUrl;
   final String shopId; // Reference to the shop's document ID
+  String productStatus; // product status (for order product)
   double rating;
   int stock;
   int totalSold;
+  int quantity; //quantity of how much customer buy the item
   ShopData? shop; // Add ShopData reference
 
   ProductData({
@@ -18,11 +19,12 @@ class ProductData {
     required this.productName,
     required this.description,
     required this.price,
-    this.imageUrl,
     required this.shopId,
+    this.productStatus = "pending",
     this.rating = 5,
     this.stock = 0,
     this.totalSold = 0,
+    this.quantity = 0,
     this.shop, // Provide optional ShopData reference in the constructor
   });
 
@@ -34,7 +36,6 @@ class ProductData {
       productName: data['productName'],
       description: data['description'] ?? "-",
       price: data['price'],
-      imageUrl: data['imageUrl'],
       shopId: data['shopId'],
       rating: data['rating'] ?? 5,
       stock: data['stock'] ?? 0,
@@ -49,26 +50,29 @@ class ProductData {
       'productName': productName,
       'description': description,
       'price': price,
-      'imageUrl': imageUrl,
       'shopId': shopId,
       'rating': rating,
-      'stock': stock,
-      'totalSold': totalSold,
+      'quantity': quantity,
+      'productStatus': productStatus,
+      // 'stock': stock,
+      // 'totalSold': totalSold,
     };
   }
 
-  //fromJson
+//fromJson
   factory ProductData.fromJson(Map<String, dynamic> json) {
     return ProductData(
       productId: json['productId'],
       productName: json['productName'],
       description: json['description'],
       price: json['price'],
-      imageUrl: json['imageUrl'],
       shopId: json['shopId'],
       rating: json['rating'],
-      stock: json['stock'],
-      totalSold: json['totalSold'],
+      productStatus: json['productStatus'],
+      // stock: json['stock'],
+      // totalSold: json['totalSold'],
+      quantity: json['quantity'] ??
+          0, // Provide a default value if 'quantity' is null
     );
   }
 }

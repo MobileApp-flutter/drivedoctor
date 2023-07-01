@@ -124,6 +124,7 @@ class _ServiceeditState extends State<Serviceedit> {
                               setState(() {});
                             } else {
                               // Permission denied, show a message or handle the error
+                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(

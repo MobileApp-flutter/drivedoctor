@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:drivedoctor/bloc/services/productservice.dart';
 import 'package:drivedoctor/bloc/controller/textform.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -31,6 +30,7 @@ class _ProducteditState extends State<Productedit> {
 
   //list of images
   final Storage storage = Storage();
+  final ProductsService productsService = ProductsService();
   List<File> selectedImages = [];
 
   void _editProduct() async {
@@ -41,7 +41,7 @@ class _ProducteditState extends State<Productedit> {
       try {
         // Upload the images to Firebase storage
         await storage.uploadImages(selectedImages, widget.productId, false);
-        await updateProduct(
+        await productsService.updateProduct(
           productId: widget.productId,
           productName: _productName,
           price: _price,
@@ -65,7 +65,7 @@ class _ProducteditState extends State<Productedit> {
     try {
       // Delete the product from Firebase storage
       await storage.deleteAllImages(widget.productId, false);
-      await deleteProduct(widget.productId);
+      await productsService.deleteProduct(widget.productId);
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Product Deleted!')));

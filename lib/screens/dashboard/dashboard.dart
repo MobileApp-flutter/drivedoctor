@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
@@ -35,6 +36,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final ShopController shopController = ShopController();
     final ProductController productController = ProductController();
+    final CartController cartController = CartController();
 
     return Scaffold(
       appBar: AppBar(
@@ -82,9 +84,9 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavigationBarWidget(
-        currentIndex:
-            0, // Replace with your current index variable// Replace with your onTabTapped callback function
+      bottomNavigationBar: BottomNavigationBarWidget(
+        currentIndex: 0,
+        cartController: cartController,
       ),
       body: SingleChildScrollView(
         child: Column(

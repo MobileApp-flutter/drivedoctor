@@ -1,33 +1,43 @@
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:flutter/material.dart';
 import 'package:drivedoctor/bloc/controller/productController.dart';
 import 'package:drivedoctor/bloc/models/product.dart';
 import 'package:drivedoctor/screens/cart.dart';
 import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/widgets/bottom_navigation_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+// ignore: must_be_immutable
 class MarketDashboardPage extends StatefulWidget {
+  CartController? cartController;
+
+  MarketDashboardPage({Key? key, this.cartController}) : super(key: key);
+
   @override
-  _MarketDashboardPageState createState() => _MarketDashboardPageState();
+  State<MarketDashboardPage> createState() => _MarketDashboardPageState();
 }
 
 class _MarketDashboardPageState extends State<MarketDashboardPage> {
   final ProductController _productController = ProductController();
-  int _currentIndex = 2; // Set the initial index for the bottom navigation bar
+  final int _currentIndex =
+      2; // Set the initial index for the bottom navigation bar
 
   final CartController _cartController = CartController();
+  final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Market Dashboard'),
+        backgroundColor: Colors.blue.shade800,
+        title: const Text('Market Dashboard'),
         automaticallyImplyLeading: false, // Remove the back button
         actions: [
           Builder(
             builder: (context) => IconButton(
               icon: Stack(
                 children: [
-                  Icon(Icons.shopping_cart),
+                  const Icon(Icons.shopping_cart),
                   Positioned(
                     right: 0,
                     child: CircleAvatar(
@@ -35,15 +45,18 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
                       foregroundColor: Colors.white,
                       radius: 10,
                       child: Text(
-                        _cartController.cartItems.length.toString(),
-                        style: TextStyle(fontSize: 12),
+                        widget.cartController?.cartItems.length.toString() ??
+                            '0',
+                        style: const TextStyle(fontSize: 12),
                       ),
                     ),
                   ),
                 ],
               ),
               onPressed: () {
-                _navigateToCart(context);
+                if (widget.cartController != null) {
+                  _navigateToCart(context);
+                }
               },
             ),
           ),
@@ -53,9 +66,9 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
         future: _productController.getProducts(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error fetching products'));
+            return const Center(child: Text('Error fetching products'));
           } else {
             final products = snapshot.data;
             if (products != null && products.isNotEmpty) {
@@ -65,51 +78,65 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
                   final product = products[index];
                   return Card(
                     elevation: 2,
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(16.0),
-                      leading: Container(
-                        width: 80,
-                        height: 80,
-                        child: product.imageUrl != null
-                            ? Image.network(
-                                product.imageUrl!,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.network(
-                                'https://example.com/placeholder.jpg',
-                                fit: BoxFit.cover,
-                              ),
+                      contentPadding: const EdgeInsets.all(16.0),
+                      leading: FutureBuilder<List<String>>(
+                        future: storage.fetchImages(product.productId, false),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<String>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError ||
+                              !snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return Image.asset(
+                              'assets/shop_image.jpg',
+                              height: 100.0,
+                              width: 150.0,
+                              fit: BoxFit.cover,
+                            );
+                          } else {
+                            return Image.network(
+                              snapshot.data!.first,
+                              height: 100.0,
+                              width: 150.0,
+                              fit: BoxFit.cover,
+                            );
+                          }
+                        },
                       ),
                       title: Text(
                         product.productName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
                       subtitle: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '\$${product.price.toStringAsFixed(2)}',
-                              style: TextStyle(
+                              'RM${product.price.toStringAsFixed(2)}',
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               product.description,
-                              style: TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
                       ),
                       trailing: IconButton(
-                        icon: Icon(Icons.add_shopping_cart),
+                        icon: const Icon(Icons.add_shopping_cart),
                         onPressed: () {
                           _addToCart(product);
                         },
@@ -122,15 +149,28 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
                 },
               );
             } else {
-              return Center(child: Text('No products available'));
+              return const Center(child: Text('No products available'));
             }
           }
         },
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
-        currentIndex: _currentIndex,
-      ),
+          currentIndex: _currentIndex, cartController: _cartController),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveCartItems();
+  }
+
+  void _retrieveCartItems() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? cartItems = prefs.getStringList('cartItems');
+    if (cartItems != null) {
+      _cartController.setCartItems(cartItems);
+    }
   }
 
   void _navigateToCart(BuildContext context) {
@@ -141,8 +181,13 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
     );
   }
 
-  void _addToCart(ProductData product) {
+  Future<void> _addToCart(ProductData product) async {
     _cartController.addToCart(product);
+
+    // Store the updated cart items in shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('cartItems', _cartController.tempCart);
+
     setState(() {}); // Update the UI after adding the item to the cart
   }
 
@@ -164,69 +209,90 @@ class _MarketDashboardPageState extends State<MarketDashboardPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.network(
-                    product.imageUrl ?? 'https://example.com/placeholder.jpg',
-                    fit: BoxFit.cover,
-                    height: 200,
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: FutureBuilder<List<String>>(
+                    future: storage.fetchImages(product.productId, false),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<String>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError ||
+                          !snapshot.hasData ||
+                          snapshot.data!.isEmpty) {
+                        return Image.asset(
+                          'assets/shop_image.jpg',
+                          height: 100.0,
+                          width: 150.0,
+                          fit: BoxFit.cover,
+                        );
+                      } else {
+                        return Image.network(
+                          snapshot.data!.first,
+                          height: 100.0,
+                          width: 150.0,
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    },
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         product.productName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Price: \$${product.price.toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 8),
+                      const Text(
                         'Description:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         product.description,
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'Rating: ${product.rating}',
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Stock: ${product.stock}',
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Total Sold: ${product.totalSold}',
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text('Close'),
+                          child: const Text('Close'),
                         ),
                       ),
                     ],

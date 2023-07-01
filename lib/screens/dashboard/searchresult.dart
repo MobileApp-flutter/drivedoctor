@@ -1,9 +1,11 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:flutter/material.dart';
 import '../../bloc/models/shop.dart';
 import '../../bloc/models/product.dart';
 
-class SearchResultsPage extends StatelessWidget {
+class SearchResultsPage extends StatefulWidget {
   final String searchOption;
   final List<ShopData> shops;
   final List<ProductData> products;
@@ -16,25 +18,37 @@ class SearchResultsPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<SearchResultsPage> createState() => _SearchResultsPageState();
+}
+
+class _SearchResultsPageState extends State<SearchResultsPage> {
+  final Storage storage = Storage();
+  String imageName = 'shop.jpg';
+
+  @override
   Widget build(BuildContext context) {
     List<dynamic> results;
-    if (searchOption == 'all') {
-      results = [...shops, ...products];
-    } else if (searchOption == 'shop') {
-      results = shops;
-    } else if (searchOption == 'product') {
-      results = products;
+    if (widget.searchOption == 'all') {
+      results = [...widget.shops, ...widget.products];
+    } else if (widget.searchOption == 'shop') {
+      results = widget.shops;
+    } else if (widget.searchOption == 'product') {
+      results = widget.products;
     } else {
-      results = Null as List;
+      results = <dynamic>[];
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Results - $searchOption'),
+        title: Text('Search Results - ${widget.searchOption}'),
         backgroundColor: Colors.blue.shade800,
       ),
-      body: ListView.builder(
+      body: ListView.separated(
         itemCount: results.length,
+        separatorBuilder: (context, index) => Divider(
+          color: Colors.blue.shade800, // Set the color of the divider here
+          height: 1, // Set the height of the divider here
+        ),
         itemBuilder: (context, index) {
           final result = results[index];
           if (result is ShopData) {
@@ -51,16 +65,38 @@ class SearchResultsPage extends StatelessWidget {
 
   Widget _buildShopItem(ShopData shop, BuildContext context) {
     return SizedBox(
-      height: 120,
+      height: 100,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
         leading: SizedBox(
           width: 80,
           height: 80,
-          child: Image.network(
-            shop.imageUrl,
-            fit: BoxFit.cover,
-          ),
+          child: FutureBuilder<String>(
+              future: storage.fetchShopProfilePicture(shop.shopId, imageName),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  return Image.network(
+                    shop.imageUrl,
+                    height: 120.0,
+                    width: 200.0,
+                    fit: BoxFit.cover,
+                  );
+                } else {
+                  String downloadUrl = snapshot.data?.toString() ?? '';
+                  final imageProvider = downloadUrl.isNotEmpty
+                      ? NetworkImage(downloadUrl) as ImageProvider
+                      : const AssetImage('assets/shop_image.jpg');
+
+                  return Image(
+                    image: imageProvider,
+                    height: 120.0,
+                    width: 200.0,
+                    fit: BoxFit.cover,
+                  );
+                }
+              }),
         ),
         title: Text(
           shop.shopname,
@@ -96,18 +132,47 @@ class SearchResultsPage extends StatelessWidget {
 
   Widget _buildProductItem(ProductData product, BuildContext context) {
     return SizedBox(
-      height: 120, // Adjust the height as desired
+      height: 100, // Adjust the height as desired
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
         leading: SizedBox(
           width: 80,
           height: 80,
-          child: Container(
+          child: SizedBox(
             height: 120.0,
             width: 200.0,
-            child: Image.network(
-              product.imageUrl ?? 'https://example.com/placeholder.jpg',
-              fit: BoxFit.cover,
+            child: FutureBuilder<List<String>>(
+              future: storage.fetchImages(product.productId, false),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError ||
+                    !snapshot.hasData ||
+                    snapshot.data!.isEmpty) {
+                  return Image.asset(
+                    'assets/shop_image.jpg',
+                    height: 100.0,
+                    width: 150.0,
+                    fit: BoxFit.cover,
+                  );
+                } else {
+                  return CarouselSlider(
+                    options: CarouselOptions(
+                      height: 100.0,
+                      aspectRatio: 16 / 9,
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: false,
+                    ),
+                    items: snapshot.data!.map((image) {
+                      return Image.network(
+                        image,
+                        fit: BoxFit.cover,
+                      );
+                    }).toList(),
+                  );
+                }
+              },
             ),
           ),
         ),

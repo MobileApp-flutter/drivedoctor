@@ -9,19 +9,29 @@ class CartItem {
 
 class CartController {
   List<CartItem> cartItems = [];
+  List<String> tempCart = [];
+
+  void setCartItems(List<String> items) {
+    tempCart = items;
+  }
 
   void addToCart(ProductData product) {
+    bool existsInCart = false;
+
     // Check if the product already exists in the cart
     for (var cartItem in cartItems) {
       if (cartItem.product.productId == product.productId) {
         // Product already in the cart, increment the quantity
         cartItem.quantity++;
-        return;
+        existsInCart = true;
+        break; // Exit the loop once the product is found
       }
     }
 
     // Product not found in the cart, add it as a new item
-    cartItems.add(CartItem(product: product, quantity: 1));
+    if (!existsInCart) {
+      cartItems.add(CartItem(product: product, quantity: 1));
+    }
   }
 
   void removeFromCart(ProductData product) {

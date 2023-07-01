@@ -1,3 +1,5 @@
+import 'package:drivedoctor/bloc/controller/cartController.dart';
+import 'package:drivedoctor/screens/cart.dart';
 import 'package:drivedoctor/screens/order/orderpage.dart';
 import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +7,23 @@ import 'package:drivedoctor/screens/dashboard/dashboard.dart';
 import 'package:drivedoctor/screens/dashboard/marketdashboard.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
-class BottomNavigationBarWidget extends StatelessWidget {
+class BottomNavigationBarWidget extends StatefulWidget {
   final int currentIndex;
+  final CartController? cartController;
 
   const BottomNavigationBarWidget({
     super.key,
     required this.currentIndex,
+    required this.cartController,
   });
+
+  @override
+  State<BottomNavigationBarWidget> createState() =>
+      _BottomNavigationBarWidgetState();
+}
+
+class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
+  CartController? cartControl = CartController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +53,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
       onTap: (index) => onTabTapped(index, context),
-      currentIndex: currentIndex,
+      currentIndex: widget.currentIndex,
     );
   }
 
@@ -51,17 +63,27 @@ class BottomNavigationBarWidget extends StatelessWidget {
         // Navigate to Home page (DashboardPage)
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DashboardPage()),
+          MaterialPageRoute(builder: (context) => const DashboardPage()),
         );
         break;
       case 1:
         // Navigate to Cart page (CartPage)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CartPage(
+                    cartController: widget.cartController,
+                  )),
+        );
         break;
       case 2:
         // Navigate to Marketplace page (MarketDashboardPage)
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MarketDashboardPage()),
+          MaterialPageRoute(
+            builder: (context) =>
+                MarketDashboardPage(cartController: widget.cartController),
+          ),
         );
         break;
       case 3:

@@ -1,4 +1,5 @@
 import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/screens/shop/shopdetailsbody.dart';
@@ -16,13 +17,16 @@ class Shopdetails extends StatefulWidget {
 }
 
 class _ShopdetailsState extends State<Shopdetails> {
+  final CartController cartController = CartController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.blue.shade800,
         appBar: buildShopDetailsAppBar(context),
-        bottomNavigationBar: const BottomNavigationBarWidget(
+        bottomNavigationBar: BottomNavigationBarWidget(
           currentIndex: 0,
+          cartController: cartController,
         ),
         body: FutureBuilder<ShopData>(
             future: Auth.getShopDataByShopId(widget.shopId),

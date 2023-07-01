@@ -47,12 +47,21 @@ class ShopSideMenu extends StatelessWidget {
           onTap: () {},
         ),
         ListTile(
-          title:
-              const Text("Manage order", style: TextStyle(color: Colors.black)),
+          title: const Text("Manage order service",
+              style: TextStyle(color: Colors.black)),
           leading:
               const Icon(Icons.local_shipping_outlined, color: Colors.black),
           onTap: () {
             Navigator.pushReplacementNamed(context, manageOrder);
+          },
+        ),
+        ListTile(
+          title: const Text("Manage order product",
+              style: TextStyle(color: Colors.black)),
+          leading:
+              const Icon(Icons.local_shipping_outlined, color: Colors.black),
+          onTap: () {
+            Navigator.pushReplacementNamed(context, manageOrderProduct);
           },
         ),
       ],

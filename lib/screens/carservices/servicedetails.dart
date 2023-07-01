@@ -1,4 +1,5 @@
 import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/bloc/models/services.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/screens/carservices/servicedetailsbody.dart';
@@ -19,13 +20,16 @@ class Servicedetails extends StatefulWidget {
 }
 
 class _ServicedetailsState extends State<Servicedetails> {
+  final CartController cartController = CartController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.blue.shade800,
         appBar: buildServiceDetailsAppBar(context),
-        bottomNavigationBar: const BottomNavigationBarWidget(
+        bottomNavigationBar: BottomNavigationBarWidget(
           currentIndex: 0,
+          cartController: cartController,
         ),
         body: FutureBuilder<ServiceData>(
             future: Auth.getServiceDataByServiceId(widget.serviceId),

@@ -1,3 +1,4 @@
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/bloc/controller/ordercontroller.dart';
 import 'package:drivedoctor/bloc/models/order.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
@@ -15,18 +16,22 @@ class Orderpage extends StatefulWidget {
 
 class _OrderpageState extends State<Orderpage> {
   final OrderController orderController = OrderController();
+  final CartController cartController = CartController();
   final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: shopAppBar(),
-        bottomNavigationBar: const BottomNavigationBarWidget(
+        bottomNavigationBar: BottomNavigationBarWidget(
           currentIndex: 3,
+          cartController: cartController,
         ),
-        body: GetAllOrders(
-          orderController: orderController,
-          storage: storage,
+        body: SingleChildScrollView(
+          child: GetAllOrders(
+            orderController: orderController,
+            storage: storage,
+          ),
         ));
   }
 
@@ -95,8 +100,10 @@ class GetAllOrders extends StatelessWidget {
                           fit: BoxFit.cover,
                         );
                       } else {
-                        return const Text(
-                            "No shop available"); // Display a placeholder image or widget
+                        return Image.asset(
+                          'assets/shop_image.jpg',
+                          fit: BoxFit.cover,
+                        ); // Display a placeholder image or widget
                       }
                     }
                   },
@@ -138,60 +145,193 @@ class GetAllOrders extends StatelessWidget {
   }
 
   //widget buildproductitem
-  // Widget _buildOrderProductItem(
-  //   OrderData order,
-  //   BuildContext context,
-  //   int index,
-  // ) {
-  //   return SizedBox(
-  //       height: 120,
-  //       child: ListTile(
-  //         contentPadding: const EdgeInsets.all(16.0),
-  //         title: Text(
-  //           order.product![index].productName,
-  //         ),
-  //       ));
-  // }
+  Widget _buildOrderProductItem(
+    OrderData order,
+    BuildContext context,
+    int index,
+  ) {
+    return Column(
+      children: [
+        Container(
+          height: 160,
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: FutureBuilder<List<String>>(
+                  future: storage.fetchImages(
+                      order.product![index].productId, false),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<String>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError || !snapshot.hasData) {
+                      return Image.asset(
+                        'assets/shop_image.jpg',
+                        height: 100.0,
+                        width: 150.0,
+                        fit: BoxFit.cover,
+                      ); // Display a placeholder image or widget
+                    } else {
+                      final images = snapshot.data;
+                      if (images != null && images.isNotEmpty) {
+                        return Image.network(
+                          images[0],
+                          fit: BoxFit.cover,
+                        );
+                      } else {
+                        return Image.asset(
+                          'assets/shop_image.jpg',
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      order.product![index].productName,
+                      style: const TextStyle(fontSize: 16.0),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      'Quantity: ${order.product![index].quantity}',
+                      style: const TextStyle(fontSize: 14.0),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      'Total price : RM ${order.product![index].price * order.product![index].quantity}',
+                      style: const TextStyle(fontSize: 14.0),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      'Status: ${order.product![index].productStatus}',
+                      style: const TextStyle(fontSize: 14.0),
+                    ),
+                    const SizedBox(height: 6.0),
+                    Text(
+                      'Date order: ${_formatDateTime(order.orderDateCreate.toDate())}',
+                      style: const TextStyle(fontSize: 14.0),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          height: 1,
+          color: Colors.blue.shade800,
+          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+        ),
+      ],
+    );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    String formattedDate =
+        '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year.toString()}';
+    return formattedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<OrderData>>(
-        future: orderController.getOrdersByUserID(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text('Error fetching orders'));
-          } else {
-            final orders = snapshot.data;
+      future: orderController.getOrdersByUserID(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError || !snapshot.hasData) {
+          return const Center(child: Text('Error fetching orders'));
+        } else {
+          final orders = snapshot.data;
 
-            //check if car service is not empty
-            if (orders != null && orders.isNotEmpty) {
-              return SizedBox(
+          if (orders != null && orders.isNotEmpty) {
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 30,
+                ),
+                const Text(
+                  'Service Order',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+                SizedBox(
                   width: double.infinity,
                   child: ListView.builder(
-                      itemCount: orders.length,
-                      itemBuilder: (context, index) {
-                        final order = orders[index];
+                    shrinkWrap: true,
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Disable scrolling
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) {
+                      final order = orders[index];
 
-                        //check if order type is product or service
-                        if (order.orderType == 'service') {
-                          return Column(
-                            children: [
-                              for (int i = 0; i < order.service!.length; i++)
-                                _buildOrderServiceItem(order, context, i),
-                            ],
-                          );
-                          // } else if (order.orderType == 'product') {
-                          //   return _buildOrderProductItem(order, context, index);
-                        } else {
-                          return const Center(child: Text('Not working'));
-                        }
-                      }));
-            } else {
-              return const Center(child: Text('No orders found'));
-            }
+                      if (order.orderType == 'service') {
+                        return Column(
+                          children: [
+                            for (int i = 0; i < order.service!.length; i++)
+                              _buildOrderServiceItem(order, context, i),
+                          ],
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Text(
+                  'Product Order',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Disable scrolling
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) {
+                      final order = orders[index];
+
+                      if (order.orderType == 'product') {
+                        return Column(
+                          children: [
+                            for (int i = 0; i < order.product!.length; i++)
+                              _buildOrderProductItem(order, context, i),
+                          ],
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: Text('No orders found'));
           }
-        });
+        }
+      },
+    );
   }
 }

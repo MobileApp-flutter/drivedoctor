@@ -5,7 +5,7 @@ import 'package:drivedoctor/bloc/models/services.dart';
 class OrderData {
   final String orderId;
   final String orderType;
-  final String orderStatus;
+  String? orderStatus;
   final Timestamp orderDateCreate;
   final Timestamp orderDateUpdate;
 
@@ -21,7 +21,7 @@ class OrderData {
   OrderData({
     required this.orderId,
     required this.orderType,
-    required this.orderStatus,
+    this.orderStatus,
     required this.orderDateCreate,
     required this.orderDateUpdate,
     this.product,
@@ -53,7 +53,7 @@ class OrderData {
     return OrderData(
       orderId: snapshot.id,
       orderType: data['orderType'],
-      orderStatus: data['orderStatus'],
+      // orderStatus: data['orderStatus'],
       orderDateCreate: data['orderdatecreate'],
       orderDateUpdate: data['orderdateupdate'],
       product: product,

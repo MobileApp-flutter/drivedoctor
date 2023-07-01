@@ -1,12 +1,15 @@
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/bloc/routes/multiplearguments.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/screens/admin/manageusercontent.dart';
 import 'package:drivedoctor/screens/carservices/servicedetails.dart';
 import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/dashboard/dashboard.dart';
+import 'package:drivedoctor/screens/dashboard/marketdashboard.dart';
 import 'package:drivedoctor/screens/dashboard/shopdashboard.dart';
 import 'package:drivedoctor/screens/login/login.dart';
-import 'package:drivedoctor/screens/management/manageorder.dart';
+import 'package:drivedoctor/screens/management/manageorderproduct.dart';
+import 'package:drivedoctor/screens/management/manageorderservice.dart';
 import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:drivedoctor/screens/profile/shop_profile.dart';
 import 'package:drivedoctor/screens/register/registrationpage.dart';
@@ -58,6 +61,9 @@ Route<dynamic>? createRoute(settings) {
       return MaterialPageRoute(builder: (context) => const Manageusercontent());
     case manageOrder:
       return MaterialPageRoute(builder: (context) => const Manageorder());
+    case manageOrderProduct:
+      return MaterialPageRoute(
+          builder: (context) => const Manageorderproduct());
     case serviceEdit:
       final serviceId = settings.arguments as String;
       return MaterialPageRoute(
@@ -68,6 +74,12 @@ Route<dynamic>? createRoute(settings) {
       final productId = settings.arguments as String;
       return MaterialPageRoute(
           builder: (context) => Productedit(productId: productId));
+    case marketDashboard:
+      final cart = settings.arguments as CartController;
+      return MaterialPageRoute(
+          builder: (context) => MarketDashboardPage(
+                cartController: cart,
+              ));
   }
   return null;
 }

@@ -50,12 +50,13 @@ class OrderController {
     }
   }
 
-  //get all pending order
-  Future<List<OrderData>> getOrdersByShopID(String shopId) async {
+  //get all pending order service
+  Future<List<OrderData>> getOrderServiceByShopID(String shopId) async {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('orders')
           .where('shopId', isEqualTo: shopId)
+          .where('orderType', isEqualTo: 'service')
           .where('orderStatus', isEqualTo: 'pending')
           .get();
 
@@ -73,14 +74,43 @@ class OrderController {
 
           final order = OrderData.fromSnapshotService(doc, service);
           orders.add(order);
-        } else if (data.containsKey('product')) {
-          final List<dynamic> productDataList =
-              data['product'] as List<dynamic>;
-          final List<ProductData> product = productDataList
-              .map((e) => ProductData.fromJson(e as Map<String, dynamic>))
-              .toList();
+        }
+      }
 
-          final order = OrderData.fromSnapshotProduct(doc, product);
+      return orders;
+    } catch (error) {
+      if (kDebugMode) {
+        print('Error fetching orders: $error');
+      }
+      return [];
+    }
+  }
+
+  //get all pending order product
+  Future<List<OrderData>> getOrderProductByShopID(String shopId) async {
+    try {
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('orderType', isEqualTo: 'product')
+          .get();
+
+      List<OrderData> orders = [];
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+
+        final List<dynamic> productDataList = data['product'] as List<dynamic>;
+        final List<ProductData> products = productDataList
+            .map((e) => ProductData.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        // Filter the products based on productStatus
+        final List<ProductData> pendingProducts = products
+            .where((product) => product.productStatus == 'pending')
+            .toList();
+
+        if (pendingProducts.isNotEmpty) {
+          final order = OrderData.fromSnapshotProduct(doc, pendingProducts);
           orders.add(order);
         }
       }
@@ -94,8 +124,8 @@ class OrderController {
     }
   }
 
-  //get all completed order by shopId
-  Future<List<OrderData>> getCompleteOrdersByShopID(String shopId) async {
+  //get all completed order service by shopId
+  Future<List<OrderData>> getCompleteOrderServiceByShopID(String shopId) async {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('orders')

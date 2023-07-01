@@ -1,4 +1,5 @@
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../bloc/controller/shopController.dart';
@@ -6,6 +7,8 @@ import '../../bloc/models/shop.dart';
 
 class CarServiceShopListPage extends StatelessWidget {
   final ShopController _shopController = ShopController();
+  final Storage storage = Storage();
+  String imageName = 'shop.jpg';
 
   CarServiceShopListPage({super.key});
 
@@ -47,10 +50,41 @@ class CarServiceShopListPage extends StatelessWidget {
                             leading: SizedBox(
                               width: 80,
                               height: 80,
-                              child: Image.network(
-                                carService.imageUrl,
-                                fit: BoxFit.cover,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: storage.fetchShopProfilePicture(
+                                      carService.shopId, imageName),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    } else if (snapshot.hasError ||
+                                        !snapshot.hasData) {
+                                      return Image.network(
+                                        carService.imageUrl,
+                                        height: 120.0,
+                                        width: 200.0,
+                                        fit: BoxFit.cover,
+                                      );
+                                    } else {
+                                      String downloadUrl =
+                                          snapshot.data?.toString() ?? '';
+                                      final imageProvider =
+                                          downloadUrl.isNotEmpty
+                                              ? NetworkImage(downloadUrl)
+                                                  as ImageProvider
+                                              : const AssetImage(
+                                                  'assets/shop_image.jpg');
+
+                                      return Image(
+                                        image: imageProvider,
+                                        height: 120.0,
+                                        width: 200.0,
+                                        fit: BoxFit.cover,
+                                      );
+                                    }
+                                  }),
                             ),
                             title: Text(
                               carService.shopname,

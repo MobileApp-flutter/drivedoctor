@@ -1,4 +1,5 @@
 import 'package:drivedoctor/bloc/controller/auth.dart';
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:drivedoctor/bloc/models/shop.dart';
 import 'package:drivedoctor/bloc/models/user.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
@@ -21,6 +22,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final CartController cartController = CartController();
   final Storage storage = Storage();
   String imageName = 'profile.jpg';
 
@@ -52,9 +54,9 @@ class _ProfileState extends State<Profile> {
             ],
           ),
         ),
-        bottomNavigationBar: const BottomNavigationBarWidget(
-          currentIndex:
-              4, // Replace with your current index variable// Replace with your onTabTapped callback function
+        bottomNavigationBar: BottomNavigationBarWidget(
+          currentIndex: 4,
+          cartController: cartController,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),

@@ -1,6 +1,3 @@
-// import 'package:drivedoctor/screens/dashboard/dashboard.dart';
-// import 'package:drivedoctor/screens/onboarding/onboarding.dart';
-// import 'package:drivedoctor/screens/profile/profile.dart';
 import 'package:drivedoctor/bloc/routes/createroute.dart';
 import 'package:drivedoctor/screens/dashboard/admindashboard.dart';
 import 'package:drivedoctor/screens/onboarding/onboarding.dart';
@@ -73,21 +70,18 @@ class AuthChecker extends StatelessWidget {
               if (snapshot.data == false) {
                 final User? user = FirebaseAuth.instance.currentUser;
                 if (user == null) {
-                  userProvider
-                      .setUserId("null"); 
-                      userProvider.setUserEmail("null");
+                  userProvider.setUserId("null");
+                  userProvider.setUserEmail("null");
                   return const LoginPage();
                 } else {
                   // Check if the user is an admin or a regular user
                   if (user.email == "admin@example.com") {
-                    userProvider.setUserId(
-                        user.uid);
-                        userProvider.setUserEmail(user.email!);
+                    userProvider.setUserId(user.uid);
+                    userProvider.setUserEmail(user.email!);
                     return const Admindashboard();
                   } else {
-                    userProvider.setUserId(
-                        user.uid);
-                        userProvider.setUserEmail(user.email!);
+                    userProvider.setUserId(user.uid);
+                    userProvider.setUserEmail(user.email!);
                     return const DashboardPage();
                   }
                 }

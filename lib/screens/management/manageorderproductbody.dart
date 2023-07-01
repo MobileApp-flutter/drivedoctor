@@ -2,31 +2,38 @@ import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/controller/ordercontroller.dart';
 import 'package:drivedoctor/bloc/models/order.dart';
 import 'package:drivedoctor/bloc/models/user.dart';
-import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/orderservice.dart';
 import 'package:flutter/material.dart';
 
-class Manageorderbody extends StatefulWidget {
-  const Manageorderbody({Key? key}) : super(key: key);
+import '../../bloc/routes/route.dart';
+
+class Manageorderproductbody extends StatefulWidget {
+  const Manageorderproductbody({Key? key}) : super(key: key);
 
   @override
-  State<Manageorderbody> createState() => _ManageorderbodyState();
+  State<Manageorderproductbody> createState() => _ManageorderproductbodyState();
 }
 
-class _ManageorderbodyState extends State<Manageorderbody> {
+class _ManageorderproductbodyState extends State<Manageorderproductbody> {
   final OrderController orderController = OrderController();
   final OrderService orderService = OrderService();
   bool pendingOrderExpanded = false;
   bool completedOrderExpanded = false;
 
-  void _updateOrderStatus(String orderId) async {
-    await orderService.updateOrder(
-      orderId: orderId,
-      orderStatus: 'complete',
+  void _updateOrderStatus(String productId) async {
+    await orderService.updateOrderProduct(
+      productId: productId,
+      productStatus: 'complete',
     );
 
     // ignore: use_build_context_synchronously
     Navigator.pushReplacementNamed(context, manageOrder);
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    String formattedDate =
+        '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year.toString()}';
+    return formattedDate;
   }
 
   @override
@@ -46,8 +53,8 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                   dividerColor: Colors.blue,
                   animationDuration: const Duration(milliseconds: 500),
                   children: [
-                    pendingOrder(shopId),
-                    completedOrder(shopId),
+                    pendingOrderProduct(shopId),
+                    completedOrderProduct(shopId),
                   ],
                   expansionCallback: (int index, bool isExpanded) {
                     setState(() {
@@ -75,7 +82,7 @@ class _ManageorderbodyState extends State<Manageorderbody> {
     );
   }
 
-  ExpansionPanel pendingOrder(String shopId) {
+  ExpansionPanel pendingOrderProduct(String shopId) {
     return ExpansionPanel(
       headerBuilder: (BuildContext context, bool isExpanded) {
         return const ListTile(
@@ -83,7 +90,7 @@ class _ManageorderbodyState extends State<Manageorderbody> {
         );
       },
       body: FutureBuilder<List<OrderData>>(
-        future: orderController.getOrdersByShopID(shopId),
+        future: orderController.getOrderProductByShopID(shopId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final List<OrderData> orders = snapshot.data!;
@@ -100,8 +107,7 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                       return Column(
                         children: [
                           Container(
-                            color: Colors.blue
-                                .shade50, // Set your desired background color here
+                            color: Colors.blue.shade50,
                             child: ListTile(
                               title: Text('Order id: ${order.orderId}'),
                               subtitle: Column(
@@ -110,17 +116,25 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                                   Text('Order type: ${order.orderType}'),
                                   const SizedBox(height: 20),
 
-                                  if (order.orderType == 'service')
-                                    Text(
-                                        'Service name: ${order.service![0].servicename}'),
+                                  //details on product
+                                  if (order.orderType == 'product')
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: order.product!
+                                          .map((product) => Text(
+                                              'Product name: ${product.productName}'))
+                                          .toList(),
+                                    ),
 
                                   // User details
                                   Text('Customer: ${userData.fullname}'),
                                   Text('Contact: ${userData.contact}'),
 
-                                  // add more details on product
-                                  if (order.orderType == 'product')
-                                    const Text('Product name:'),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Date order: ${_formatDateTime(order.orderDateCreate.toDate())}',
+                                  ),
 
                                   const SizedBox(height: 10),
 
@@ -130,8 +144,7 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return SizedBox(
-                                            height:
-                                                150, // Adjust the height as needed
+                                            height: 150,
                                             child: Align(
                                               alignment: Alignment.centerLeft,
                                               child: Container(
@@ -141,7 +154,6 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    // Add text content here
                                                     const Text(
                                                       'Select Order Status:',
                                                       style: TextStyle(
@@ -151,17 +163,14 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                                                       ),
                                                     ),
                                                     const SizedBox(height: 8),
-                                                    // Add dialog content and options here
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.only(
                                                               left: 12.0),
                                                       child: ElevatedButton(
                                                         onPressed: () {
-                                                          // Update order status to "Pending"
-                                                          // You can add the necessary logic here
                                                           Navigator.of(context)
-                                                              .pop(); // Close the modal
+                                                              .pop();
                                                         },
                                                         child: const Text(
                                                             'Pending'),
@@ -174,12 +183,15 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                                                       child: ElevatedButton(
                                                         onPressed: () {
                                                           _updateOrderStatus(
-                                                              order.orderId);
+                                                              order
+                                                                  .product![
+                                                                      index]
+                                                                  .productId);
                                                         },
                                                         style: ElevatedButton
                                                             .styleFrom(
-                                                          backgroundColor: Colors
-                                                              .green, // Set the background color to green
+                                                          backgroundColor:
+                                                              Colors.green,
                                                         ),
                                                         child: const Text(
                                                             'Complete'),
@@ -193,7 +205,7 @@ class _ManageorderbodyState extends State<Manageorderbody> {
                                         },
                                       );
                                     },
-                                    child: Text(order.orderStatus),
+                                    child: Text(order.orderStatus ?? 'Unknown'),
                                   ),
                                 ],
                               ),
@@ -222,85 +234,81 @@ class _ManageorderbodyState extends State<Manageorderbody> {
     );
   }
 
-  ExpansionPanel completedOrder(String shopId) {
+  ExpansionPanel completedOrderProduct(String shopId) {
     return ExpansionPanel(
       headerBuilder: (BuildContext context, bool isExpanded) {
         return const ListTile(
-          title: Text('Completed Order'),
+          title: Text('Completed Order (In development)'),
         );
       },
-      body: FutureBuilder<List<OrderData>>(
-        future: orderController.getCompleteOrdersByShopID(shopId),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final List<OrderData> orders = snapshot.data!;
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                final OrderData order = orders[index];
-                return FutureBuilder<UserData>(
-                  future: Auth.getUserDataByUserId(order.userId),
-                  builder: (context, userSnapshot) {
-                    if (userSnapshot.hasData) {
-                      final userData = userSnapshot.data!;
-                      return Column(
-                        children: [
-                          Container(
-                            color: Colors.blue
-                                .shade50, // Set your desired background color here
-                            child: ListTile(
-                              title: Text('Order id: ${order.orderId}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Order type: ${order.orderType}'),
-                                  const SizedBox(height: 20),
+      body: const ListTile(
+        title: Text("Hello"),
+        subtitle: Text('To delete this panel, tap the trash can icon'),
+        trailing: Icon(Icons.delete),
+        // body: FutureBuilder<List<OrderData>>(
+        //   future: orderController.getCompleteOrderServiceByShopID(shopId),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.hasData) {
+        //       final List<OrderData> orders = snapshot.data!;
+        //       return ListView.builder(
+        //         shrinkWrap: true,
+        //         itemCount: orders.length,
+        //         itemBuilder: (context, index) {
+        //           final OrderData order = orders[index];
+        //           return FutureBuilder<UserData>(
+        //             future: Auth.getUserDataByUserId(order.userId),
+        //             builder: (context, userSnapshot) {
+        //               if (userSnapshot.hasData) {
+        //                 final userData = userSnapshot.data!;
+        //                 return Column(
+        //                   children: [
+        //                     Container(
+        //                       color: Colors.blue
+        //                           .shade50, // Set your desired background color here
+        //                       child: ListTile(
+        //                         title: Text('Order id: ${order.orderId}'),
+        //                         subtitle: Column(
+        //                           crossAxisAlignment: CrossAxisAlignment.start,
+        //                           children: [
+        //                             Text('Order type: ${order.orderType}'),
+        //                             const SizedBox(height: 20),
 
-                                  if (order.orderType == 'service')
-                                    Text(
-                                        'Service name: ${order.service![0].servicename}'),
+        //                             if (order.orderType == 'service')
+        //                               Text(
+        //                                   'Service name: ${order.service![0].servicename}'),
 
-                                  // User details
-                                  Text('Customer: ${userData.fullname}'),
-                                  Text('Contact: ${userData.contact}'),
+        //                             // User details
+        //                             Text('Customer: ${userData.fullname}'),
+        //                             Text('Contact: ${userData.contact}'),
 
-                                  // add more details on product
-                                  if (order.orderType == 'product')
-                                    const Text('Product name:'),
+        //                             // add more details on product
+        //                             if (order.orderType == 'product')
+        //                               const Text('Product name:'),
 
-                                  const SizedBox(height: 10),
+        //                             const SizedBox(height: 10),
 
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors
-                                          .green, // Set the background color to green
-                                    ),
-                                    onPressed: () {},
-                                    child: Text(order.orderStatus),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Divider(
-                            color: Colors.blue.shade800,
-                          ),
-                        ],
-                      );
-                    } else {
-                      return const Text("error");
-                    }
-                  },
-                );
-              },
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+        //                             ElevatedButton(
+        //                               style: ElevatedButton.styleFrom(
+        //                                 backgroundColor: Colors
+        //                                     .green, // Set the background color to green
+        //                               ),
+        //                               onPressed: () {},
+        //                               child: Text(order.orderStatus ?? 'Unknown'),
+        //                             ),
+        //                           ],
+        //                         ),
+        //                       ),
+        //                     ),
+        //                     Divider(
+        //                       color: Colors.blue.shade800,
+        //                     ),
+        //                   ],
+        //                 );
+        //               } else {
+        //                 return const Text("error");
+        //               }
+        //             },
+        //           );
       ),
       isExpanded: completedOrderExpanded,
     );

@@ -35,11 +35,9 @@ class OrderService {
   //create order only with product
   Future createOrderProduct({
     required String orderType,
-    required String orderStatus,
-    required String email,
-    required String shopId,
-    required String userId,
+    required String? userId,
     required List<ProductData> product,
+    required double totalPrice,
   }) async {
     final orderDoc = FirebaseFirestore.instance.collection('orders').doc();
     final orderId = orderDoc.id;
@@ -47,18 +45,17 @@ class OrderService {
     final orderData = {
       'orderId': orderId,
       'orderType': orderType,
-      'orderStatus': orderStatus,
       'orderdatecreate': Timestamp.fromDate(orderdatecreate),
       'orderdateupdate': Timestamp.fromDate(orderdateupdate),
       'userId': userId,
-      'shopId': shopId,
       'product': product.map((e) => e.toJson()).toList(),
+      'totalPrice': totalPrice,
     };
 
     await orderDoc.set(orderData);
   }
 
-  //update order status
+  //update order service status
   Future<void> updateOrder({
     String? orderId,
     String? orderStatus,
@@ -71,6 +68,27 @@ class OrderService {
 
     if (orderStatus != null && orderStatus.isNotEmpty) {
       dataToUpdate['orderStatus'] = orderStatus;
+    }
+
+    //retreive the first matching document and then update it with new data
+    await docOrder.get().then((value) {
+      value.docs.first.reference.update(dataToUpdate);
+    });
+  }
+
+  //update order product status
+  Future<void> updateOrderProduct({
+    String? productId,
+    String? productStatus,
+  }) async {
+    final docOrder = FirebaseFirestore.instance
+        .collection('orders')
+        .where('product.productStatus', isEqualTo: productStatus);
+
+    final dataToUpdate = <String, dynamic>{};
+
+    if (productStatus != null && productStatus.isNotEmpty) {
+      dataToUpdate['orderStatus'] = productStatus;
     }
 
     //retreive the first matching document and then update it with new data

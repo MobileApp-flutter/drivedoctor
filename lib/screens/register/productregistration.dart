@@ -32,6 +32,8 @@ class _ProductsState extends State<Products> {
   final Storage storage = Storage();
   List<File> selectedImages = [];
 
+  final ProductsService productsService = ProductsService();
+
   void _submitForm(BuildContext context) async {
     final form = _formKey.currentState;
     if (form!.validate()) {
@@ -56,7 +58,7 @@ class _ProductsState extends State<Products> {
         await storage.uploadImages(selectedImages, productId, false);
 
         //create the service
-        await createProduct(
+        await productsService.createProduct(
           productId: productId,
           productName: _productName,
           price: _price,

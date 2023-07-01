@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 
 class UserProvider extends ChangeNotifier {
-  String userId = '';
-  String userEmail = '';
+  String _userId = '';
+  String _userEmail = '';
+
+  String get userId => _userId;
+  String get userEmail => _userEmail;
 
   void setUserId(String id) {
-    userId = id;
-    notifyListeners();
+    if (_userId != id) {
+      _userId = id;
+      _notifyListeners();
+    }
   }
+
   void setUserEmail(String email) {
-    userEmail = email;
-    notifyListeners();
+    if (_userEmail != email) {
+      _userEmail = email;
+      _notifyListeners();
+    }
+  }
+
+  void _notifyListeners() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 }

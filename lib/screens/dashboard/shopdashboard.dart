@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivedoctor/bloc/controller/cartController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -118,6 +119,7 @@ class _ShopdashboardState extends State<Shopdashboard> {
   Widget build(BuildContext context) {
     final ServiceController serviceController = ServiceController();
     final ProductController productController = ProductController();
+    final CartController cartController = CartController();
     UserProvider userProvider = Provider.of<UserProvider>(context);
     String userId = userProvider.userId;
 
@@ -171,9 +173,9 @@ class _ShopdashboardState extends State<Shopdashboard> {
           drawer: const Drawer(
             child: ShopSideMenu(),
           ),
-          bottomNavigationBar: const BottomNavigationBarWidget(
-            currentIndex:
-                0, // Replace with your current index variable// Replace with your onTabTapped callback function
+          bottomNavigationBar: BottomNavigationBarWidget(
+            currentIndex: 0,
+            cartController: cartController,
           ),
           body: SingleChildScrollView(
             child: Column(

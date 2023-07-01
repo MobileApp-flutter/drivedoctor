@@ -24,7 +24,6 @@ class _ShopProfileState extends State<ShopProfile> {
   String? _companycontact;
   String? _companyemail;
   String? _address;
-  String? _shopImage;
 
   final _formKey = GlobalKey<FormState>();
   final TextFormController textform = TextFormController();
@@ -176,9 +175,7 @@ class _ShopProfileState extends State<ShopProfile> {
                                               'shops/$shopId/$fileName');
 
                                       //set state on shop image
-                                      setState(() {
-                                        _shopImage = imageUrl;
-                                      });
+                                      setState(() {});
 
                                       //upload the image to the doc
                                       // await updateShopImageUrl(shopId, imageUrl);
@@ -233,9 +230,7 @@ class _ShopProfileState extends State<ShopProfile> {
                                                 'shops/$shopId/$fileName');
 
                                         //set state on shop image
-                                        setState(() {
-                                          _shopImage = imageUrl;
-                                        });
+                                        setState(() {});
 
                                         //upload the image to the doc
                                         // await updateShopImageUrl(shopId, imageUrl);

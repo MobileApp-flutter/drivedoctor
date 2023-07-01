@@ -1,4 +1,6 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drivedoctor/bloc/routes/route.dart';
+import 'package:drivedoctor/bloc/services/storageservice.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../bloc/controller/productController.dart';
@@ -6,6 +8,7 @@ import '../../bloc/models/product.dart';
 
 class ProductListPage extends StatelessWidget {
   final ProductController _productController = ProductController();
+  final Storage storage = Storage();
 
   ProductListPage({super.key});
 
@@ -31,8 +34,13 @@ class ProductListPage extends StatelessWidget {
           } else {
             final products = snapshot.data;
             if (products != null && products.isNotEmpty) {
-              return ListView.builder(
+              return ListView.separated(
                 itemCount: products.length,
+                separatorBuilder: (context, index) => Divider(
+                  color:
+                      Colors.blue.shade800, // Set the color of the divider here
+                  height: 2, // Set the height of the divider here
+                ),
                 itemBuilder: (context, index) {
                   final product = products[index];
                   return SizedBox(
@@ -42,10 +50,39 @@ class ProductListPage extends StatelessWidget {
                       leading: SizedBox(
                         width: 80,
                         height: 80,
-                        child: Image.network(
-                          product.imageUrl ??
-                              'https://example.com/placeholder.jpg',
-                          fit: BoxFit.cover,
+                        child: FutureBuilder<List<String>>(
+                          future: storage.fetchImages(product.productId, false),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<String>> snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (snapshot.hasError ||
+                                !snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return Image.asset(
+                                'assets/shop_image.jpg',
+                                height: 100.0,
+                                width: 150.0,
+                                fit: BoxFit.cover,
+                              );
+                            } else {
+                              return CarouselSlider(
+                                options: CarouselOptions(
+                                  height: 100.0,
+                                  aspectRatio: 16 / 9,
+                                  enlargeCenterPage: true,
+                                  enableInfiniteScroll: false,
+                                ),
+                                items: snapshot.data!.map((image) {
+                                  return Image.network(
+                                    image,
+                                    fit: BoxFit.cover,
+                                  );
+                                }).toList(),
+                              );
+                            }
+                          },
                         ),
                       ),
                       title: Text(
