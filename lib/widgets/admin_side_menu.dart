@@ -3,6 +3,8 @@ import 'package:drivedoctor/bloc/routes/route.dart';
 import 'package:drivedoctor/bloc/services/authservice.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/admin/subscription_management_page.dart';
+
 class AdminSideMenu extends StatelessWidget {
   const AdminSideMenu({
     super.key,
@@ -60,7 +62,13 @@ class AdminSideMenu extends StatelessWidget {
           title: const Text("Subscription Management",
               style: TextStyle(color: Colors.white)),
           leading: const Icon(Icons.subscriptions, color: Colors.white),
-          onTap: () {},
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SubscriptionManagementPage()),
+            );
+          },
         ),
         ListTile(
           title: const Text("Logout", style: TextStyle(color: Colors.white)),
