@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivedoctor/bloc/controller/auth.dart';
 import 'package:drivedoctor/bloc/models/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -58,7 +59,6 @@ class _CreateFeedbackPageState extends State<CreateFeedbackPage> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final userId = userProvider.userId;
-    print(userId);
     final userEmail = userProvider.userEmail;
 
     return Scaffold(
@@ -115,8 +115,8 @@ class _CreateFeedbackPageState extends State<CreateFeedbackPage> {
                   rating: _rating,
                   text: _feedbackController.text,
                   shopId: widget.shopId,
-                  userId: userId,
-                  userEmail: userEmail,
+                  userId: Auth.uid,
+                  userEmail: Auth.email,
                   dateTime: DateTime.now(),
                 );
 
