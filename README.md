@@ -1,16 +1,19 @@
 # drivedoctor
 
-A new Flutter project.
+DriveDoctor is a mobile application that provides the needs for car
 
-## Getting Started
+Features:
 
-This project is a starting point for a Flutter application.
+1. Check out car workshops and stores near you
+2. Buy products or services they offer
+3. Set up your own workshop and sell products and services
+4. Get notified about your car service process in the workshop
+5. Get more with our premium subscription.
 
-A few resources to get you started if this is your first Flutter project:
+## Developers
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Brendan Dylan @rhodylan
+2. Aum Jeevan @AumJeevan24
+3. Theresa Lau Xin Yi @TheresaLau
+4. Muhammad Najib @GNajibby
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
